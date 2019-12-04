@@ -24,3 +24,9 @@ TeamCode/build/
 local.properties
 TeamCode/TeamCode.iml
 FTC-Team-16932.iml
+TeamCode/build.gradle
+TeamCode/build.release.gradle
+TeamCode/src/main/AndroidManifest.xml
+TeamCode/src/main/java/org/firstinspires/ftc/teamcode/readme.md
+TeamCode/src/main/res/values/strings.xml
+TeamCode/src/main/res/xml/teamwebcamcalibrations.xml
