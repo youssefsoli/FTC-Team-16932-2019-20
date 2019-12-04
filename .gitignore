@@ -21,3 +21,6 @@ FtcRobotController
 
 # TeamCode build files
 TeamCode/build/
+local.properties
+TeamCode/TeamCode.iml
+FTC-Team-16932.iml
