@@ -1,69 +1,40 @@
+
+
 package org.firstinspires.ftc.teamcode;
 
-import android.support.annotation.NonNull;
-
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import java.lang.Math;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
-import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.robotcore.external.navigation.Temperature;
-import org.firstinspires.ftc.teamcode.subsystems.Drive;
-import org.firstinspires.ftc.teamcode.subsystems.DriveTrainMotorPower;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+/**
+ * This file contains an example of an iterative (Non-Linear) "OpMode".
+ * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
+ * The names of OpModes appear on the menu of the FTC Driver Station.
+ * When an selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
+ *
+ * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
+ * It includes all the skeletal structure that all iterative OpModes contain.
+ *
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ */
 
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
-import java.util.Locale;
-
-
-
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
+@TeleOp(name="Teleop", group="Iterative Opmode")
 
 public class Teleop extends OpMode
 {
     // Declare OpMode members.
-    private static ElapsedTime runtime = new ElapsedTime();
-    private static DcMotor leftDriveMotor = null;
-    private static DcMotor rightDriveMotor = null;
-    private static DcMotor frontDriveMotor = null;
-    private static DcMotor rearDriveMotor = null;
-    DriveTrainMotorPower driveTrainMotorPower = new DriveTrainMotorPower();
-    Drive drive = new Drive();
-
-/*
-    BNO055IMU imu;
-
-    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-
-
-    parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-    parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-    parameters.calibrationDataFile = "BNO055IMUCalibration.json";  // see the calibration sample opmode
-    parameters.loggingEnabled      = true;
-    parameters.loggingTag          = "IMU";
-    parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-    // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-    // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-    // and named "imu".
-    imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-*/
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
+    private DcMotor frontDrive = null;
+    private DcMotor rearDrive = null;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -75,37 +46,37 @@ public class Teleop extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
+        leftDrive  = hardwareMap.get(DcMotor.class, "leftDriveMotor");
+        rightDrive = hardwareMap.get(DcMotor.class, "rightDriveMotor");
+        frontDrive = hardwareMap.get(DcMotor.class, "frontDriveMotor");
+        rearDrive  = hardwareMap.get(DcMotor.class, "rearDriveMotor");
 
-        leftDriveMotor  = hardwareMap.get(DcMotor.class, "leftDriveMotor");
-        rightDriveMotor = hardwareMap.get(DcMotor.class, "rightDriveMotor");
-        frontDriveMotor = hardwareMap.get(DcMotor.class, "frontDriveMotor");
-        rearDriveMotor  = hardwareMap.get(DcMotor.class, "rearDriveMotor");
+        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rearDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rearDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rearDriveMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDriveMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightDriveMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontDriveMotor.setDirection(DcMotor.Direction.REVERSE);
-        rearDriveMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rearDrive.setDirection(DcMotor.Direction.REVERSE);
+
+
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-
     }
 
     /*
@@ -126,12 +97,19 @@ public class Teleop extends OpMode
     boolean fastMode = false;
     boolean before = false;
     boolean after = false;
+
     final double robotOrientation = 45; // degrees, unit circle layout
 
 
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
     @Override
     public void loop() {
+
+        // Setup a variable for each drive wheel to save power level for telemetry
+        double leftPower;
+        double rightPower;
+        double frontPower;
+        double rearPower;
 
         after = gamepad1.a;
 
@@ -141,18 +119,53 @@ public class Teleop extends OpMode
 
         before = after;
 
-        drive.calculateMotorPower(fastMode, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_stick_y);
-        leftDriveMotor.setPower(driveTrainMotorPower.getLeft());
-        rightDriveMotor.setPower(driveTrainMotorPower.getRight());
-        frontDriveMotor.setPower(driveTrainMotorPower.getFront());
-        rearDriveMotor.setPower(driveTrainMotorPower.getRear());
 
+        // Left Stick for rotation, right for translation
+        // displacement vector described by magnitude and bearing
 
-        telemetry.addData("Left Drive", leftDriveMotor.getCurrentPosition());
-        telemetry.addData("Right Drive", rightDriveMotor.getCurrentPosition());
-        telemetry.addData("Front Drive", frontDriveMotor.getCurrentPosition());
-        telemetry.addData("Rear Drive", rearDriveMotor.getCurrentPosition());
-        telemetry.addData("Robot Orientation", robotOrientation);
+        double turn = -gamepad1.left_stick_x;
+        double power = Math.hypot(gamepad1.right_stick_x, gamepad1.right_stick_y);
+
+        /*bearing is derived from gamepad x-y vector's angle
+        (unit circle layout), plus known robot orientation,
+        to produce absolute bearing angle, wrt to field*/
+
+        double rightStickY = gamepad1.right_stick_y;
+        double rightStickX = gamepad1.right_stick_x;
+        double bearing = Math.atan2(rightStickY, rightStickX) + Math.toRadians(robotOrientation);
+        //unit circle layout, this var is in radians
+
+        double driveY = (Math.sin(bearing)) * power;
+        double driveX = (Math.cos(bearing)) * power;
+        //breaks vector into x-y components
+
+        telemetry.addData("Drive X", driveX);
+        telemetry.addData("Drive Y", driveY);
+
+        if(fastMode) {
+            leftPower   = Range.clip(turn + driveX, -1.0, 1.0) ;
+            rightPower  = Range.clip(turn - driveX, -1.0, 1.0) ;
+            frontPower  = Range.clip(turn + driveY, -1.0, 1.0) ;
+            rearPower   = Range.clip(turn - driveY, -1.0, 1.0) ;
+        }
+        else {
+            leftPower   = Range.clip(turn + driveX, -0.5, 0.5) ;
+            rightPower  = Range.clip(turn - driveX, -0.5, 0.5) ;
+            frontPower  = Range.clip(turn + driveY, -0.5, 0.5) ;
+            rearPower   = Range.clip(turn - driveY, -0.5, 0.5) ;
+        }
+
+        // Send calculated power to wheels
+        leftDrive.setPower(leftPower);
+        rightDrive.setPower(rightPower);
+        frontDrive.setPower(frontPower);
+        rearDrive.setPower(rearPower);
+
+        telemetry.addData("Left Drive", leftDrive.getCurrentPosition());
+        telemetry.addData("Right Drive", rightDrive.getCurrentPosition());
+        telemetry.addData("Front Drive", frontDrive.getCurrentPosition());
+        telemetry.addData("Rear Drive", rearDrive.getCurrentPosition());
+
     }
 
     /*
@@ -160,27 +173,6 @@ public class Teleop extends OpMode
      */
     @Override
     public void stop() {
-    }
-
-    public void initNav(){
-        BNO055IMU imu;
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile  = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled       = true;
-        parameters.loggingTag           = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-    }
-
-    public void getRobotOrientation(){
-
     }
 
 }
