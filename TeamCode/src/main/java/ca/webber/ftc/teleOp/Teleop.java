@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -31,10 +32,10 @@ public class Teleop extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
-    private DcMotor frontDrive = null;
-    private DcMotor rearDrive = null;
+    private DcMotorEx leftDrive = null;
+    private DcMotorEx rightDrive = null;
+    private DcMotorEx frontDrive = null;
+    private DcMotorEx rearDrive = null;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -46,10 +47,10 @@ public class Teleop extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "leftDriveMotor");
-        rightDrive = hardwareMap.get(DcMotor.class, "rightDriveMotor");
-        frontDrive = hardwareMap.get(DcMotor.class, "frontDriveMotor");
-        rearDrive  = hardwareMap.get(DcMotor.class, "rearDriveMotor");
+        leftDrive  = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftDriveMotor");
+        rightDrive = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightDriveMotor");
+        frontDrive = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontDriveMotor");
+        rearDrive  = (DcMotorEx) hardwareMap.get(DcMotor.class, "rearDriveMotor");
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
