@@ -2,12 +2,10 @@
 
 package ca.webber.ftc.teleOp;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import java.lang.Math;
@@ -32,10 +30,10 @@ public class Teleop extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotorEx leftDrive = null;
-    private DcMotorEx rightDrive = null;
-    private DcMotorEx frontDrive = null;
-    private DcMotorEx rearDrive = null;
+    private DcMotorEx frontRight = null;
+    private DcMotorEx frontLeft = null;
+    private DcMotorEx backRight = null;
+    private DcMotorEx backLeft = null;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -47,33 +45,25 @@ public class Teleop extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftDriveMotor");
-        rightDrive = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightDriveMotor");
-        frontDrive = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontDriveMotor");
-        rearDrive  = (DcMotorEx) hardwareMap.get(DcMotor.class, "rearDriveMotor");
+        frontRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontRight");
+        frontLeft = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontLeft");
+        backRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = (DcMotorEx) hardwareMap.get(DcMotor.class, "backLeft");
 
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rearDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // Tell the driver that initialization is complete.
@@ -107,10 +97,10 @@ public class Teleop extends OpMode
     public void loop() {
 
         // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower;
-        double rightPower;
-        double frontPower;
-        double rearPower;
+        double frPower;
+        double flPower;
+        double brPower;
+        double blPower;
 
         after = gamepad1.a;
 
@@ -127,9 +117,9 @@ public class Teleop extends OpMode
         double turn = -gamepad1.left_stick_x;
         double power = Math.hypot(gamepad1.right_stick_x, gamepad1.right_stick_y);
 
-        /*bearing is derived from gamepad x-y vector's angle
+        /* bearing is derived from gamepad x-y vector's angle
         (unit circle layout), plus known robot orientation,
-        to produce absolute bearing angle, wrt to field*/
+        to produce absolute bearing angle, wrt to field */
 
         double rightStickY = gamepad1.right_stick_y;
         double rightStickX = gamepad1.right_stick_x;
@@ -144,28 +134,28 @@ public class Teleop extends OpMode
         telemetry.addData("Drive Y", driveY);
 
         if(fastMode) {
-            leftPower   = Range.clip(turn + driveX, -1.0, 1.0) ;
-            rightPower  = Range.clip(turn - driveX, -1.0, 1.0) ;
-            frontPower  = Range.clip(turn + driveY, -1.0, 1.0) ;
-            rearPower   = Range.clip(turn - driveY, -1.0, 1.0) ;
+            frPower   = Range.clip(Math.sqrt(turn + driveY), -1.0, 1.0) ;
+            flPower  = Range.clip(Math.sqrt(turn - driveX), -1.0, 1.0) ;
+            brPower  = Range.clip(Math.sqrt(turn + driveX), -1.0, 1.0) ;
+            blPower   = Range.clip(Math.sqrt(turn - driveY), -1.0, 1.0) ;
         }
         else {
-            leftPower   = Range.clip(turn + driveX, -0.5, 0.5) ;
-            rightPower  = Range.clip(turn - driveX, -0.5, 0.5) ;
-            frontPower  = Range.clip(turn + driveY, -0.5, 0.5) ;
-            rearPower   = Range.clip(turn - driveY, -0.5, 0.5) ;
+            frPower   = Range.clip(turn + driveY, -0.5, 0.5) ;
+            flPower  = Range.clip(turn - driveX, -0.5, 0.5) ;
+            brPower  = Range.clip(turn + driveX, -0.5, 0.5) ;
+            blPower   = Range.clip(turn - driveY, -0.5, 0.5) ;
         }
 
         // Send calculated power to wheels
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
-        frontDrive.setPower(frontPower);
-        rearDrive.setPower(rearPower);
+        frontRight.setPower(frPower);
+        frontLeft.setPower(flPower);
+        backRight.setPower(brPower);
+        backLeft.setPower(blPower);
 
-        telemetry.addData("Left Drive", leftDrive.getCurrentPosition());
-        telemetry.addData("Right Drive", rightDrive.getCurrentPosition());
-        telemetry.addData("Front Drive", frontDrive.getCurrentPosition());
-        telemetry.addData("Rear Drive", rearDrive.getCurrentPosition());
+        telemetry.addData("frontRight Drive", frontRight.getCurrentPosition());
+        telemetry.addData("frontLeft Drive", frontLeft.getCurrentPosition());
+        telemetry.addData("backRight Drive", backRight.getCurrentPosition());
+        telemetry.addData("backLeft Drive", backLeft.getCurrentPosition());
 
     }
 
