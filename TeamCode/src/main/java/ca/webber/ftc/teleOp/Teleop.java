@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import java.lang.Math;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -85,12 +84,10 @@ public class Teleop extends OpMode
         runtime.reset();
     }
 
-    boolean fastMode = false;
-    boolean before = false;
-    boolean after = false;
-
-    final double robotOrientation = 45; // degrees, unit circle layout
-
+    private final double robotOrientation = 45; // degrees, unit circle layout
+    private boolean fastMode = false;
+    private boolean before = false;
+    private boolean after = false;
 
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
     @Override
@@ -134,16 +131,16 @@ public class Teleop extends OpMode
         telemetry.addData("Drive Y", driveY);
 
         if(fastMode) {
-            frPower   = Range.clip(Math.sqrt(turn + driveY), -1.0, 1.0) ;
-            flPower  = Range.clip(Math.sqrt(turn - driveX), -1.0, 1.0) ;
-            brPower  = Range.clip(Math.sqrt(turn + driveX), -1.0, 1.0) ;
-            blPower   = Range.clip(Math.sqrt(turn - driveY), -1.0, 1.0) ;
+            frPower = Range.clip(Math.pow(turn + driveY, 3), -1.0, 1.0);
+            flPower = Range.clip(Math.pow(turn - driveX, 3), -1.0, 1.0);
+            brPower = Range.clip(Math.pow(turn + driveX, 3), -1.0, 1.0);
+            blPower = Range.clip(Math.pow(turn - driveY, 3), -1.0, 1.0);
         }
         else {
-            frPower   = Range.clip(turn + driveY, -0.5, 0.5) ;
-            flPower  = Range.clip(turn - driveX, -0.5, 0.5) ;
-            brPower  = Range.clip(turn + driveX, -0.5, 0.5) ;
-            blPower   = Range.clip(turn - driveY, -0.5, 0.5) ;
+            frPower = Range.clip(Math.pow(turn + driveY, 3), -0.5, 0.5);
+            flPower = Range.clip(Math.pow(turn - driveX, 3), -0.5, 0.5);
+            brPower = Range.clip(Math.pow(turn + driveX, 3), -0.5, 0.5);
+            blPower = Range.clip(Math.pow(turn - driveY, 3), -0.5, 0.5);
         }
 
         // Send calculated power to wheels
