@@ -1,5 +1,3 @@
-
-
 package ca.webber.ftc.teleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -11,23 +9,8 @@ import com.qualcomm.robotcore.util.Range;
 import java.lang.Math;
 
 import ca.webber.ftc.subsystems.FoundationMover;
-import ca.webber.ftc.subsystems.Intake;
 import ca.webber.ftc.subsystems.Lift;
-
-
-/**
- * This file contains an example of an iterative (Non-Linear) "OpMode".
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
- * The names of OpModes appear on the menu of the FTC Driver Station.
- * When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all iterative OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
+import ca.webber.ftc.subsystems.Intake;
 
 @TeleOp(name="Teleop", group="Iterative Opmode")
 
@@ -39,12 +22,13 @@ public class Teleop extends OpMode
     private DcMotorEx frontLeft = null;
     private DcMotorEx backRight = null;
     private DcMotorEx backLeft = null;
-    private DcMotorEx liftMotor = null;
+    private DcMotorEx liftMotorL = null;
+    private DcMotorEx liftMotorR = null;
     private DcMotorEx leftIntake = null;
     private DcMotorEx rightIntake = null;
-    private DcMotorEx foundationMotor = null;
-    FoundationMover foundationMover;
-    //Intake intake;
+    //private DcMotorEx foundationMotor = null;
+    //FoundationMover foundationMover;
+    Intake intake;
     Lift lift;
 
     /*
@@ -62,48 +46,56 @@ public class Teleop extends OpMode
         backRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "backRight");
         backLeft = (DcMotorEx) hardwareMap.get(DcMotor.class, "backLeft");
 
-        liftMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "liftMotor");
-        //leftIntake = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftIntake");
-        //rightIntake = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightIntake");
-        foundationMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "foundation");
+        liftMotorL = (DcMotorEx) hardwareMap.get(DcMotor.class, "liftMotorL");
+        liftMotorR = (DcMotorEx) hardwareMap.get(DcMotor.class, "liftMotorR");
+        leftIntake = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftIntake");
+        rightIntake = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightIntake");
+        //foundationMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "foundation");
+
+        lift = new Lift(liftMotorL, liftMotorR);
+        intake = new Intake(leftIntake, rightIntake);
+
+        liftMotorL.setTargetPosition(0);
+        liftMotorR.setTargetPosition(0);
+        leftIntake.setTargetPosition(0);
+        rightIntake.setTargetPosition(0);
+        //foundationMover = new FoundationMover(foundationMotor);
+
+        // Tell the driver that initialization is complete.
+        telemetry.addData("Status", "Initialized");
 
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-        //leftIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-        //rightIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-        foundationMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-
+        liftMotorL.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+        liftMotorR.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+        leftIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+        rightIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+       // foundationMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
 
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //leftIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //rightIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        foundationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //foundationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        liftMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftIntake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightIntake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //foundationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //leftIntake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //rightIntake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        foundationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-
-
-        foundationMover = new FoundationMover(foundationMotor);
-        lift = new Lift(liftMotor);
-        //intake = new Intake(leftIntake, rightIntake);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -128,6 +120,9 @@ public class Teleop extends OpMode
     boolean before = false;
     boolean after = false;
 
+    boolean dPadUpPressed = false;
+    boolean dPadDownPressed = false;
+
     int directionMultiplier = 1;
 
     final double robotOrientation = 45; // degrees, unit circle layout
@@ -151,11 +146,11 @@ public class Teleop extends OpMode
 
         before = after;
 
-        if (gamepad1.dpad_left){
+        if (gamepad1.x){
             directionMultiplier = -1;
         }
 
-        if (gamepad1.dpad_right){
+        if (gamepad1.y){
             directionMultiplier = 1;
         }
         // Left Stick for rotation, right for translation
@@ -193,27 +188,29 @@ public class Teleop extends OpMode
             blPower   = Range.clip(Math.pow(turn - driveY, 3), -0.5, 0.5) ;
         }
 
-        //intake.shift(gamepad1.left_trigger - gamepad1.right_trigger);
+        intake.shift(gamepad2.left_stick_x);
 
-        if (gamepad1.x){
-            //intake.close();
+
+        if (gamepad2.x){
+            intake.close();
         }
 
-        if (gamepad1.y){
-            //intake.open();
+        if (gamepad2.y){
+            intake.open();
         }
 
-        if (gamepad1.dpad_up){
+        if (gamepad2.dpad_up && !dPadUpPressed){
             lift.moveUp1Level();
+            dPadUpPressed = false;
         }
 
-        if (gamepad1.dpad_down){
+        if (gamepad2.dpad_down && !dPadDownPressed){
             lift.moveDown1Level();
+            dPadDownPressed = false;
         }
 
-        if (gamepad1.left_stick_button){
-            lift.move(gamepad1.left_stick_y);
-        }
+        telemetry.addData("leftInt", leftIntake.getCurrentPosition());
+        lift.move(gamepad2.left_stick_y);
 
         // Send calculated power to wheels
         frontRight.setPower(frPower);
