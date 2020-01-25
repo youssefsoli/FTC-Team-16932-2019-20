@@ -26,8 +26,7 @@ public final class Drive {
         this.direction = direction;
     }
 
-    public void drive(double x, double y) {
-        double turn = -x;
+    public void drive(double x, double y, double turn) {
         double power = Math.hypot(x, y);
         double bearing = Math.atan2(y, x) + Math.toRadians(45);
         double driveY = (Math.sin(bearing)) * power * direction;

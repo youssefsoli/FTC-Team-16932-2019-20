@@ -2,11 +2,13 @@ package ca.webber.ftc.teleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import ca.webber.ftc.subsystems.Drive;
+import ca.webber.ftc.subsystems.FoundationMover;
 import ca.webber.ftc.subsystems.Intake;
 import ca.webber.ftc.subsystems.Lift;
 
@@ -23,6 +25,8 @@ public class Teleop extends OpMode
     private DcMotorEx liftMotorR = null;
     private DcMotorEx leftIntake = null;
     private DcMotorEx rightIntake = null;
+    private CRServo foundation1 = null;
+    private CRServo foundation2 = null;
     //private DcMotorEx foundationMotor = null;
     //FoundationMover foundationMover;
     private Intake intake;
@@ -47,16 +51,12 @@ public class Teleop extends OpMode
         liftMotorR = (DcMotorEx) hardwareMap.get(DcMotor.class, "liftMotorR");
         leftIntake = (DcMotorEx) hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = (DcMotorEx) hardwareMap.get(DcMotor.class, "rightIntake");
-        //foundationMotor = (DcMotorEx) hardwareMap.get(DcMotor.class, "foundation");
+
+        foundation1 = hardwareMap.get(CRServo.class, "foundation1");
+        foundation2 = hardwareMap.get(CRServo.class, "foundation2");
 
         lift = new Lift(liftMotorL, liftMotorR);
         intake = new Intake(leftIntake, rightIntake);
-
-        liftMotorL.setTargetPosition(0);
-        liftMotorR.setTargetPosition(0);
-        leftIntake.setTargetPosition(0);
-        rightIntake.setTargetPosition(0);
-        //foundationMover = new FoundationMover(foundationMotor);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -69,7 +69,6 @@ public class Teleop extends OpMode
         liftMotorR.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         leftIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         rightIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-       // foundationMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
 
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -80,18 +79,11 @@ public class Teleop extends OpMode
         liftMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //foundationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        liftMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftIntake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightIntake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //foundationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
         // Tell the driver that initialization is complete.
@@ -113,16 +105,11 @@ public class Teleop extends OpMode
         runtime.reset();
     }
 
-    boolean fastMode = false;
     boolean before = false;
     boolean after = false;
 
     boolean dPadUpPressed = false;
     boolean dPadDownPressed = false;
-
-    int directionMultiplier = 1;
-
-    final double robotOrientation = 45; // degrees, unit circle layout
 
 
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -130,11 +117,12 @@ public class Teleop extends OpMode
     public void loop() {
 
         Drive drive = new Drive(frontRight, frontLeft, backRight, backLeft);
+        FoundationMover foundationMover = new FoundationMover(foundation1, foundation2);
 
         after = gamepad1.a;
 
         if(before && !after) {
-            fastMode = !fastMode;
+            drive.toggleFastMode();
         }
 
         before = after;
@@ -147,10 +135,14 @@ public class Teleop extends OpMode
             drive.setDirection(1);
         }
 
-        drive.drive(gamepad1.right_stick_x, gamepad1.right_stick_y);
+        drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
 
-        intake.shift(gamepad2.left_stick_x);
+        //intake.shift(gamepad2.right_stick_x);
 
+        intake.shiftRight(gamepad2.left_stick_x);
+        intake.shiftLeft(gamepad2.right_stick_x);
+
+        foundationMover.lockDown(gamepad2.right_trigger);
 
         if (gamepad2.x){
             intake.close();
@@ -171,12 +163,12 @@ public class Teleop extends OpMode
         }
 
         telemetry.addData("leftInt", leftIntake.getCurrentPosition());
-        lift.move(gamepad2.left_stick_y);
+        telemetry.addData("rightInt", rightIntake.getCurrentPosition());
 
-        telemetry.addData("frontRight Drive", frontRight.getCurrentPosition());
-        telemetry.addData("frontLeft Drive", frontLeft.getCurrentPosition());
-        telemetry.addData("backRight Drive", backRight.getCurrentPosition());
-        telemetry.addData("backLeft Drive", backLeft.getCurrentPosition());
+        telemetry.addData("leftLift", liftMotorL.getCurrentPosition());
+        telemetry.addData("rightLift", liftMotorL.getCurrentPosition());
+
+        lift.move(gamepad2.left_stick_y);
 
     }
 
