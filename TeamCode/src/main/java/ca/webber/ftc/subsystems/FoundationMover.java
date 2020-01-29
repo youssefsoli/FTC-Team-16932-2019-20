@@ -13,18 +13,14 @@ public class FoundationMover {
         this.foundation2 = foundation2;
     }
 
-    public void loop() {
+    public void toggleLock() {
+        lock = !lock;
         if (lock) {
             foundation1.setPower(1);
             foundation2.setPower(-1);
+        } else {
+            foundation1.setPower(0);
+            foundation2.setPower(0);
         }
-    }
-
-    public void toggleLock() {
-        lock = !lock;
-    }
-
-    public boolean getLock() {
-        return lock;
     }
 }

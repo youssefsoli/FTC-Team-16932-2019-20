@@ -132,20 +132,21 @@ public class Teleop extends OpMode {
         telemetry.addData("Ticks", ++i);
 
 
+        /********** Intakes are being reset right away TO FIX ***********/
         intake.moveRight(gamepad2.left_stick_x);
 
         intake.moveLeft(gamepad2.right_stick_x);
+
+        if (gamepad2.left_bumper)
+            intake.shiftLeft();
+        if (gamepad2.right_bumper)
+            intake.shiftRight();
 
         if (!beforeLock && gamepad2.a) {
             foundationMover.toggleLock();
         }
 
         beforeLock = gamepad2.a;
-
-        if (gamepad2.left_bumper)
-            intake.shiftLeft();
-        if (gamepad2.right_bumper)
-            intake.shiftRight();
 
         lift.move(gamepad2.dpad_up ? -.5 : gamepad2.dpad_down ? .5 : 0);
 
