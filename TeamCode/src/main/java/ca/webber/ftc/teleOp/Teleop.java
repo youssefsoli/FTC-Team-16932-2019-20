@@ -12,9 +12,8 @@ import ca.webber.ftc.subsystems.FoundationMover;
 import ca.webber.ftc.subsystems.Intake;
 import ca.webber.ftc.subsystems.Lift;
 
-@TeleOp(name="Teleop", group="Iterative Opmode")
-public class Teleop extends OpMode
-{
+@TeleOp(name = "Teleop", group = "Iterative Opmode")
+public class Teleop extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotorEx frontRight = null;
@@ -27,10 +26,28 @@ public class Teleop extends OpMode
     private DcMotorEx rightIntake = null;
     private CRServo foundation1 = null;
     private CRServo foundation2 = null;
-    //private DcMotorEx foundationMotor = null;
-    //FoundationMover foundationMover;
     private Intake intake;
     private Lift lift;
+    int i = 0;
+    private Drive drive;
+    private FoundationMover foundationMover;
+    private boolean beforeFast = false;
+    private boolean beforeLock = false;
+
+    /*
+     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
+     */
+    @Override
+    public void init_loop() {
+    }
+
+    /*
+     * Code to run ONCE when the driver hits PLAY
+     */
+    @Override
+    public void start() {
+        runtime.reset();
+    }
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -57,6 +74,8 @@ public class Teleop extends OpMode
 
         lift = new Lift(liftMotorL, liftMotorR);
         intake = new Intake(leftIntake, rightIntake);
+        drive = new Drive(frontRight, frontLeft, backRight, backLeft);
+        foundationMover = new FoundationMover(foundation1, foundation2);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -65,8 +84,10 @@ public class Teleop extends OpMode
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         liftMotorL.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         liftMotorR.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+
         leftIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         rightIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
 
@@ -77,6 +98,7 @@ public class Teleop extends OpMode
 
         liftMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         leftIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -85,90 +107,47 @@ public class Teleop extends OpMode
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        leftIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        liftMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
-    }
-
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
-        runtime.reset();
-    }
-
-    boolean before = false;
-    boolean after = false;
-
-    boolean dPadUpPressed = false;
-    boolean dPadDownPressed = false;
-
-
-    // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
+    // Code to run REPEATEDLY after the driver hits PLAY but beforeFast they hit STOP
     @Override
     public void loop() {
 
-        Drive drive = new Drive(frontRight, frontLeft, backRight, backLeft);
-        FoundationMover foundationMover = new FoundationMover(foundation1, foundation2);
-
-        after = gamepad1.a;
-
-        if(before && !after) {
+        if (!beforeFast && gamepad1.a) {
             drive.toggleFastMode();
         }
 
-        before = after;
+        beforeFast = gamepad1.a;
 
-        if (gamepad1.x){
-            drive.setDirection(-1);
+        drive.drive(gamepad1);
+
+        telemetry.addData("Ticks", ++i);
+
+
+        intake.moveRight(gamepad2.left_stick_x);
+
+        intake.moveLeft(gamepad2.right_stick_x);
+
+        if (!beforeLock && gamepad2.a) {
+            foundationMover.toggleLock();
         }
 
-        if (gamepad1.y){
-            drive.setDirection(1);
-        }
+        beforeLock = gamepad2.a;
 
-        drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+        if (gamepad2.left_bumper)
+            intake.shiftLeft();
+        if (gamepad2.right_bumper)
+            intake.shiftRight();
 
-        //intake.shift(gamepad2.right_stick_x);
-
-        intake.shiftRight(gamepad2.left_stick_x);
-        intake.shiftLeft(gamepad2.right_stick_x);
-
-        foundationMover.lockDown(gamepad2.right_trigger);
-
-        if (gamepad2.x){
-            intake.close();
-        }
-
-        if (gamepad2.y){
-            intake.open();
-        }
-
-        if (gamepad2.dpad_up && !dPadUpPressed){
-            lift.moveUp1Level();
-            dPadUpPressed = false;
-        }
-
-        if (gamepad2.dpad_down && !dPadDownPressed){
-            lift.moveDown1Level();
-            dPadDownPressed = false;
-        }
-
-        telemetry.addData("leftInt", leftIntake.getCurrentPosition());
-        telemetry.addData("rightInt", rightIntake.getCurrentPosition());
-
-        telemetry.addData("leftLift", liftMotorL.getCurrentPosition());
-        telemetry.addData("rightLift", liftMotorL.getCurrentPosition());
-
-        lift.move(gamepad2.left_stick_y);
+        lift.move(gamepad2.dpad_up ? -.5 : gamepad2.dpad_down ? .5 : 0);
 
     }
 
