@@ -1,6 +1,7 @@
 package ca.webber.ftc.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class Intake {
 
@@ -12,16 +13,6 @@ public class Intake {
         this.rightArm = rightArm;
     }
 
-    public void shiftRight() {
-        leftArm.setPower(-1);
-        rightArm.setPower(-0.97);
-    }
-
-    public void shiftLeft() {
-        rightArm.setPower(1);
-        leftArm.setPower(0.97);
-    }
-
     public void moveLeft(double speed) {
         leftArm.setPower(-speed);
     }
@@ -30,5 +21,20 @@ public class Intake {
         rightArm.setPower(-speed);
     }
 
+    public void move(Gamepad gamepad) {
+        double leftPower = gamepad.left_stick_x;
+        double rightPower = gamepad.right_stick_x;
+
+        if (gamepad.right_bumper) {
+            leftPower = 1;
+            rightPower = 1;
+        } else if (gamepad.left_bumper) {
+            leftPower = -1;
+            rightPower = -1;
+        }
+
+        moveLeft(leftPower);
+        moveRight(rightPower);
+    }
 
 }
