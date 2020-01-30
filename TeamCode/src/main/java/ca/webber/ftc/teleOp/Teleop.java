@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import ca.webber.ftc.subsystems.Drive;
 import ca.webber.ftc.subsystems.FoundationMover;
 import ca.webber.ftc.subsystems.Intake;
@@ -28,7 +27,6 @@ public class Teleop extends OpMode {
     private CRServo foundation2 = null;
     private Intake intake;
     private Lift lift;
-    int i = 0;
     private Drive drive;
     private FoundationMover foundationMover;
     private boolean beforeFast = false;
@@ -116,8 +114,7 @@ public class Teleop extends OpMode {
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
-
-    // Code to run REPEATEDLY after the driver hits PLAY but beforeFast they hit STOP
+  
     @Override
     public void loop() {
 
@@ -141,7 +138,6 @@ public class Teleop extends OpMode {
             intake.shiftLeft();
         if (gamepad2.right_bumper)
             intake.shiftRight();
-
         if (!beforeLock && gamepad2.a) {
             foundationMover.toggleLock();
         }
