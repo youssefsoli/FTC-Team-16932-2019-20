@@ -11,14 +11,6 @@ public class Lift {
         this.liftMotorR = liftMotorR;
     }
 
-    public void moveUp1Level() {
-        /* Use limit switches at each level */
-    }
-
-    public void moveDown1Level() {
-        /* Use limit switches at each level */
-    }
-
     public void move(double speed) {
         liftMotorL.setPower(speed);
         liftMotorR.setPower(speed);
