@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import ca.webber.ftc.Omnibot;
+import ca.webber.ftc.robot.Omnibot;
 
 @TeleOp(name = "Teleop", group = "Iterative Opmode")
 public class Teleop extends OpMode {
@@ -32,7 +32,7 @@ public class Teleop extends OpMode {
      */
     @Override
     public void init() {
-        omnibot = new Omnibot(hardwareMap, gamepad1, gamepad2);
+        omnibot = new Omnibot(hardwareMap, telemetry, gamepad1, gamepad2);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }

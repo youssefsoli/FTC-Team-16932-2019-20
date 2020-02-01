@@ -25,10 +25,10 @@ public class Intake {
         double leftPower = gamepad.left_stick_x;
         double rightPower = gamepad.right_stick_x;
 
-        if (gamepad.right_bumper) {
+        if (gamepad.right_bumper || gamepad.dpad_right) {
             leftPower = 1;
             rightPower = 1;
-        } else if (gamepad.left_bumper) {
+        } else if (gamepad.left_bumper || gamepad.dpad_left) {
             leftPower = -1;
             rightPower = -1;
         }
