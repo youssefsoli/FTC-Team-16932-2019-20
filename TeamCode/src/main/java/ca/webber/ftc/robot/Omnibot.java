@@ -1,10 +1,13 @@
-package ca.webber.ftc;
+package ca.webber.ftc.robot;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import ca.webber.ftc.subsystems.Drive;
 import ca.webber.ftc.subsystems.FoundationMover;
@@ -29,10 +32,12 @@ public class Omnibot {
     private Lift lift;
     private Drive drive;
     private FoundationMover foundationMover;
+    private Telemetry telemetry;
     private boolean beforeFast = false;
     private boolean beforeLock = false;
+    private ElapsedTime runtime = new ElapsedTime();
 
-    public Omnibot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
+    public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         frontRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontRight");
         frontLeft = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontLeft");
         backRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "backRight");
@@ -48,6 +53,8 @@ public class Omnibot {
 
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+        this.telemetry = telemetry;
+
         lift = new Lift(liftMotorL, liftMotorR);
         intake = new Intake(leftIntake, rightIntake);
         drive = new Drive(frontRight, frontLeft, backRight, backLeft);
@@ -87,6 +94,10 @@ public class Omnibot {
         liftMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public Omnibot(HardwareMap hardwareMap, Telemetry telemetry) {
+        this(hardwareMap, telemetry, null, null);
+    }
+
     public void teleOpLoop() {
         if (!beforeFast && gamepad1.a) {
             drive.toggleFastMode();
@@ -94,7 +105,7 @@ public class Omnibot {
 
         beforeFast = gamepad1.a;
 
-        drive.drive(gamepad1);
+        drive.driveController(gamepad1);
 
         intake.move(gamepad2);
 
@@ -104,6 +115,62 @@ public class Omnibot {
 
         beforeLock = gamepad1.x;
 
-        lift.move(gamepad2.right_trigger - gamepad2.left_trigger);
+        if (gamepad2.dpad_up || gamepad2.dpad_down)
+            lift.move(gamepad2.dpad_up ? -1 : gamepad2.dpad_down ? 1 : 0);
+        else
+            lift.move(gamepad2.right_trigger - gamepad2.left_trigger);
+    }
+
+    public void gotoRedFoundation() {
+        drive.forward(.5);
+        sleep(1.8);
+        drive.stop();
+        foundationMover.toggleLock();
+        sleep(1.5);
+
+        drive.forward(-.5);
+        sleep(1.8);
+        drive.turn(0.25);
+        sleep(3);
+        drive.drive(-1, 0, 0, .5);
+        sleep(2);
+        drive.turn(0.3);
+        sleep(1.5);
+        drive.stop();
+        foundationMover.toggleLock();
+        sleep(1);
+        drive.forward(-.5);
+        sleep(2.1);
+        drive.stop();
+
+    }
+
+    public void gotoBlueFoundation() {
+        drive.forward(.5);
+        sleep(1.8);
+        drive.stop();
+        foundationMover.toggleLock();
+        sleep(1.5);
+
+        drive.forward(-.5);
+        sleep(1.8);
+        drive.turn(-0.25);
+        sleep(3);
+        drive.drive(1, 0, 0, .5);
+        sleep(2);
+        drive.turn(-0.3);
+        sleep(1.5);
+        drive.stop();
+        foundationMover.toggleLock();
+        sleep(1);
+        drive.forward(-.5);
+        sleep(2.1);
+        drive.stop();
+    }
+
+    private void sleep(double seconds) {
+        runtime.reset();
+        while (runtime.seconds() < seconds) {
+        }
     }
 }
