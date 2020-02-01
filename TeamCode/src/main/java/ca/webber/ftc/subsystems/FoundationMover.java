@@ -11,6 +11,9 @@ public class FoundationMover {
     public FoundationMover(CRServo foundation1, CRServo foundation2) {
         this.foundation1 = foundation1;
         this.foundation2 = foundation2;
+
+        foundation1.setPower(0);
+        foundation2.setPower(0);
     }
 
     public void toggleLock() {
