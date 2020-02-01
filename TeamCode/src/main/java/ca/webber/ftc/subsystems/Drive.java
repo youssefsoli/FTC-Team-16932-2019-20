@@ -22,7 +22,35 @@ public final class Drive {
         fastMode = !fastMode;
     }
 
-    public void drive(Gamepad gamepad) {
+    public void drive(double x, double y, double turn, double speedFactor, int orientation) {
+        double power = Math.pow(Math.hypot(x, y), 2);
+        double bearing = Math.atan2(y, x) + Math.toRadians(45 + orientation);
+        double driveY = (Math.sin(bearing)) * power;
+        double driveX = (Math.cos(bearing)) * power;
+
+        frontRight.setPower(Range.scale(turn + driveY, -1.0, 1.0, -speedFactor, speedFactor));
+        frontLeft.setPower(Range.scale(turn - driveX, -1.0, 1.0, -speedFactor, speedFactor));
+        backRight.setPower(Range.scale(turn + driveX, -1.0, 1.0, -speedFactor, speedFactor));
+        backLeft.setPower(Range.scale(turn - driveY, -1.0, 1.0, -speedFactor, speedFactor));
+    }
+
+    public void drive(double x, double y, double turn, double speedFactor) {
+        drive(x, y, turn, speedFactor, 0);
+    }
+
+    public void forward(double speed) {
+        drive(0, 1, 0, speed);
+    }
+
+    public void turn(double speed) {
+        drive(0, 0, 1, speed);
+    }
+
+    public void stop() {
+        drive(0, 0, 0, 0);
+    }
+
+    public void driveController(Gamepad gamepad) {
         double x = gamepad.left_stick_x;
         double y = gamepad.left_stick_y;
 
@@ -38,16 +66,6 @@ public final class Drive {
         double turn = gamepad.right_stick_x;
         double speedFactor = 0.3;
 
-        double power = Math.pow(Math.hypot(x, y), 2);
-        double bearing = Math.atan2(y, x) + Math.toRadians(45);
-        double driveY = (Math.sin(bearing)) * power;
-        double driveX = (Math.cos(bearing)) * power;
-
-        double frPower;
-        double flPower;
-        double brPower;
-        double blPower;
-
         turn *= 0.5;
 
         if (fastMode)
@@ -56,14 +74,6 @@ public final class Drive {
         if (gamepad.left_stick_button)
             speedFactor = 1;
 
-        frPower = Range.scale(turn + driveY, -1.0, 1.0, -speedFactor, speedFactor);
-        flPower = Range.scale(turn - driveX, -1.0, 1.0, -speedFactor, speedFactor);
-        brPower = Range.scale(turn + driveX, -1.0, 1.0, -speedFactor, speedFactor);
-        blPower = Range.scale(turn - driveY, -1.0, 1.0, -speedFactor, speedFactor);
-
-        frontRight.setPower(frPower);
-        frontLeft.setPower(flPower);
-        backRight.setPower(brPower);
-        backLeft.setPower(blPower);
+        drive(x, y, turn, speedFactor);
     }
 }
