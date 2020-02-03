@@ -18,9 +18,6 @@ public class RedAutoMain extends LinearOpMode {
 
         waitForStart();
         omnibot.gotoRedFoundation();
-        while (opModeIsActive()) {
-            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", 2.f);
-            telemetry.update();
-        }
+        sleep(2000);
     }
 }

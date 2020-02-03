@@ -126,11 +126,13 @@ public class Omnibot {
         sleep(1.8);
         drive.stop();
         foundationMover.toggleLock();
-        sleep(1.5);
+        sleep(1.2);
+        drive.drive(1, 0, 0, .5);
+        sleep(1.2);
 
         drive.forward(-.5);
         sleep(1.8);
-        drive.turn(0.25);
+        drive.turn(0.3);
         sleep(3);
         drive.drive(-1, 0, 0, .5);
         sleep(2);
@@ -139,8 +141,10 @@ public class Omnibot {
         drive.stop();
         foundationMover.toggleLock();
         sleep(1);
+        drive.forward(.5);
+        sleep(1);
         drive.forward(-.5);
-        sleep(2.1);
+        sleep(1.9);
         drive.stop();
 
     }
@@ -150,11 +154,13 @@ public class Omnibot {
         sleep(1.8);
         drive.stop();
         foundationMover.toggleLock();
-        sleep(1.5);
+        sleep(1.2);
+        drive.drive(-1, 0, 0, .5);
+        sleep(1.2);
 
         drive.forward(-.5);
         sleep(1.8);
-        drive.turn(-0.25);
+        drive.turn(-0.3);
         sleep(3);
         drive.drive(1, 0, 0, .5);
         sleep(2);
@@ -163,8 +169,18 @@ public class Omnibot {
         drive.stop();
         foundationMover.toggleLock();
         sleep(1);
+        drive.forward(.5);
+        sleep(1);
         drive.forward(-.5);
-        sleep(2.1);
+        sleep(1.9);
+        drive.stop();
+    }
+
+    public void idleBlue() {
+        drive.drive(-1, 0, 0, .5);
+        sleep(1.4);
+        drive.forward(.5);
+        sleep(1.8);
         drive.stop();
     }
 
