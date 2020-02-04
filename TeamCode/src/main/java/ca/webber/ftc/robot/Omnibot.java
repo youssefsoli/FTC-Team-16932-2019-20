@@ -122,58 +122,48 @@ public class Omnibot {
     }
 
     public void gotoRedFoundation() {
-        drive.forward(.5);
-        sleep(1.8);
-        drive.stop();
-        foundationMover.toggleLock();
-        sleep(1.2);
-        drive.drive(1, 0, 0, .5);
-        sleep(1.2);
-
-        drive.forward(-.5);
-        sleep(1.8);
-        drive.turn(0.3);
-        sleep(3);
         drive.drive(-1, 0, 0, .5);
+        sleep(.8);
+
+        drive.forward(0.45);
         sleep(2);
-        drive.turn(0.3);
-        sleep(1.5);
-        drive.stop();
+
         foundationMover.toggleLock();
-        sleep(1);
-        drive.forward(.5);
-        sleep(1);
-        drive.forward(-.5);
-        sleep(1.9);
-        drive.stop();
+        sleep(0.8);
+
+        drive.turn(-0.3);
+        sleep(2.2);
+
+        drive.forward(0.5);
+        foundationMover.toggleLock();
+        sleep(2);
+
+        drive.drive(-1, 0, 0, .5);
+        sleep(0.8);
 
     }
 
     public void gotoBlueFoundation() {
-        drive.forward(.5);
-        sleep(1.8);
-        drive.stop();
-        foundationMover.toggleLock();
-        sleep(1.2);
-        drive.drive(-1, 0, 0, .5);
-        sleep(1.2);
-
-        drive.forward(-.5);
-        sleep(1.8);
-        drive.turn(-0.3);
-        sleep(3);
         drive.drive(1, 0, 0, .5);
+        sleep(.8);
+
+        drive.turn(-0.2);
+        sleep(0.08);
+        drive.forward(0.45);
         sleep(2);
-        drive.turn(-0.3);
-        sleep(1.5);
-        drive.stop();
+
         foundationMover.toggleLock();
-        sleep(1);
-        drive.forward(.5);
-        sleep(1);
-        drive.forward(-.5);
-        sleep(1.9);
-        drive.stop();
+        sleep(0.8);
+
+        drive.turn(0.3);
+        sleep(2.2);
+
+        drive.forward(0.5);
+        foundationMover.toggleLock();
+        sleep(2);
+
+        drive.drive(1, 0, 0, .5);
+        sleep(0.8);
     }
 
     public void idleBlue() {
