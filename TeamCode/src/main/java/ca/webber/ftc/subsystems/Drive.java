@@ -22,7 +22,7 @@ public final class Drive {
         fastMode = !fastMode;
     }
 
-    public void drive(double x, double y, double turn, double speedFactor, int orientation) {
+    public void drive(double x, double y, double turn, double speedFactor, double orientation) {
         double power = Math.pow(Math.hypot(x, y), 2);
         double bearing = Math.atan2(y, x) + Math.toRadians(45 + orientation);
         double driveY = (Math.sin(bearing)) * power;
@@ -50,7 +50,7 @@ public final class Drive {
         drive(0, 0, 0, 0);
     }
 
-    public void driveController(Gamepad gamepad) {
+    public void driveController(Gamepad gamepad, double orientation) {
         double x = gamepad.left_stick_x;
         double y = gamepad.left_stick_y;
 
@@ -74,6 +74,6 @@ public final class Drive {
         if (gamepad.left_stick_button)
             speedFactor = 1;
 
-        drive(x, y, turn, speedFactor);
+        drive(x, y, turn, speedFactor, orientation);
     }
 }

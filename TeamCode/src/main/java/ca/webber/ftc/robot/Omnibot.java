@@ -1,5 +1,7 @@
 package ca.webber.ftc.robot;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,6 +15,7 @@ import ca.webber.ftc.subsystems.Drive;
 import ca.webber.ftc.subsystems.FoundationMover;
 import ca.webber.ftc.subsystems.Intake;
 import ca.webber.ftc.subsystems.Lift;
+import ca.webber.ftc.subsystems.RobotOrientation;
 
 public class Omnibot {
 
@@ -30,10 +33,12 @@ public class Omnibot {
     private CRServo foundation2;
     private CRServo leftArm;
     private CRServo rightArm;
+    private BNO055IMU imu;
     private Intake intake;
     private Lift lift;
     private Drive drive;
     private FoundationMover foundationMover;
+    private RobotOrientation robotOrientation;
     private Telemetry telemetry;
     private boolean beforeFast = false;
     private boolean beforeLock = false;
@@ -56,6 +61,17 @@ public class Omnibot {
         leftArm = hardwareMap.get(CRServo.class, "leftArm");
         rightArm = hardwareMap.get(CRServo.class, "rightArm");
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
@@ -65,6 +81,7 @@ public class Omnibot {
         intake = new Intake(leftIntake, rightIntake, leftArm, rightArm);
         drive = new Drive(frontRight, frontLeft, backRight, backLeft);
         foundationMover = new FoundationMover(foundation1, foundation2);
+        robotOrientation = new RobotOrientation(imu);
 
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -105,16 +122,12 @@ public class Omnibot {
     }
 
     public void teleOpLoop() {
-        telemetry.addData("Timer", runtime.seconds());
-
-        telemetry.addData("Time left", 120 - runtime.seconds());
-
         if (!beforeFast && gamepad1.a) {
             drive.toggleFastMode();
         }
         beforeFast = gamepad1.a;
 
-        drive.driveController(gamepad1);
+        drive.driveController(gamepad1, robotOrientation.getRobotOrientation());
 
         intake.move(gamepad2);
 
@@ -132,6 +145,8 @@ public class Omnibot {
             lift.move(gamepad2.dpad_up ? -1 : gamepad2.dpad_down ? 1 : 0);
         else
             lift.move(gamepad2.right_trigger - gamepad2.left_trigger);
+
+        telemetry.addData("Orientation", robotOrientation.getRobotOrientation());
     }
 
     public void gotoRedFoundation() {

@@ -50,8 +50,8 @@ public class Intake {
     public void toggleArms() {
         lock = !lock;
         if (lock) {
-            leftArmHinge.setPower(-.6);
-            rightArmHinge.setPower(.6);
+            leftArmHinge.setPower(-.5);
+            rightArmHinge.setPower(.5);
         } else {
             leftArmHinge.setPower(1);
             rightArmHinge.setPower(-1);
