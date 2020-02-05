@@ -28,6 +28,8 @@ public class Omnibot {
     private Gamepad gamepad2;
     private CRServo foundation1;
     private CRServo foundation2;
+    private CRServo leftArm;
+    private CRServo rightArm;
     private Intake intake;
     private Lift lift;
     private Drive drive;
@@ -35,6 +37,7 @@ public class Omnibot {
     private Telemetry telemetry;
     private boolean beforeFast = false;
     private boolean beforeLock = false;
+    private boolean beforeArm = false;
     private ElapsedTime runtime = new ElapsedTime();
 
     public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
@@ -50,13 +53,16 @@ public class Omnibot {
 
         foundation1 = hardwareMap.get(CRServo.class, "foundation1");
         foundation2 = hardwareMap.get(CRServo.class, "foundation2");
+        leftArm = hardwareMap.get(CRServo.class, "leftArm");
+        rightArm = hardwareMap.get(CRServo.class, "rightArm");
 
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
+        runtime.reset();
 
         lift = new Lift(liftMotorL, liftMotorR);
-        intake = new Intake(leftIntake, rightIntake);
+        intake = new Intake(leftIntake, rightIntake, leftArm, rightArm);
         drive = new Drive(frontRight, frontLeft, backRight, backLeft);
         foundationMover = new FoundationMover(foundation1, foundation2);
 
@@ -99,10 +105,13 @@ public class Omnibot {
     }
 
     public void teleOpLoop() {
+        telemetry.addData("Timer", runtime.seconds());
+
+        telemetry.addData("Time left", 120 - runtime.seconds());
+
         if (!beforeFast && gamepad1.a) {
             drive.toggleFastMode();
         }
-
         beforeFast = gamepad1.a;
 
         drive.driveController(gamepad1);
@@ -112,8 +121,12 @@ public class Omnibot {
         if (!beforeLock && gamepad1.x) {
             foundationMover.toggleLock();
         }
-
         beforeLock = gamepad1.x;
+
+        if (!beforeArm && gamepad2.a) {
+            intake.toggleArms();
+        }
+        beforeArm = gamepad2.a;
 
         if (gamepad2.dpad_up || gamepad2.dpad_down)
             lift.move(gamepad2.dpad_up ? -1 : gamepad2.dpad_down ? 1 : 0);

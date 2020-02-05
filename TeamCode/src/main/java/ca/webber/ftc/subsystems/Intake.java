@@ -1,5 +1,6 @@
 package ca.webber.ftc.subsystems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -8,9 +9,18 @@ public class Intake {
     private DcMotorEx leftArm;
     private DcMotorEx rightArm;
 
-    public Intake (DcMotorEx leftArm, DcMotorEx rightArm){
+    private CRServo leftArmHinge;
+    private CRServo rightArmHinge;
+    private boolean lock = false;
+
+    public Intake(DcMotorEx leftArm, DcMotorEx rightArm, CRServo leftArmHinge, CRServo rightArmHinge) {
         this.leftArm = leftArm;
         this.rightArm = rightArm;
+
+        this.leftArmHinge = leftArmHinge;
+        this.rightArmHinge = rightArmHinge;
+        leftArmHinge.setPower(1);
+        rightArmHinge.setPower(-1);
     }
 
     public void moveLeft(double speed) {
@@ -35,6 +45,17 @@ public class Intake {
 
         moveLeft(leftPower);
         moveRight(rightPower);
+    }
+
+    public void toggleArms() {
+        lock = !lock;
+        if (lock) {
+            leftArmHinge.setPower(-.6);
+            rightArmHinge.setPower(.6);
+        } else {
+            leftArmHinge.setPower(1);
+            rightArmHinge.setPower(-1);
+        }
     }
 
 }
