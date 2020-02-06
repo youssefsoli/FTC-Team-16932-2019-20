@@ -150,6 +150,7 @@ public class Omnibot {
     }
 
     public void gotoRedFoundation() {
+
         drive.drive(-1, 0, 0, .5);
         sleep(.8);
 
@@ -167,7 +168,17 @@ public class Omnibot {
         sleep(2);
 
         drive.drive(-1, 0, 0, .5);
-        sleep(0.8);
+        sleep(1.2);
+
+        drive.forward(-0.4);
+        sleep(0.4);
+
+        drive.turn(-0.3);
+        intake.toggleArms();
+        sleep(0.6);
+
+        drive.forward(-0.4);
+        sleep(0.3);
 
     }
 
@@ -198,7 +209,7 @@ public class Omnibot {
 
         drive.turn(0.3);
         intake.toggleArms();
-        sleep(0.65);
+        sleep(0.6);
 
         drive.forward(-0.4);
         sleep(0.3);
