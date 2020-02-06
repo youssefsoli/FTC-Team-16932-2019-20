@@ -191,7 +191,17 @@ public class Omnibot {
         sleep(2);
 
         drive.drive(1, 0, 0, .5);
-        sleep(0.8);
+        sleep(1.2);
+
+        drive.forward(-0.4);
+        sleep(0.4);
+
+        drive.turn(0.3);
+        intake.toggleArms();
+        sleep(0.65);
+
+        drive.forward(-0.4);
+        sleep(0.3);
     }
 
     public void idleBlue() {

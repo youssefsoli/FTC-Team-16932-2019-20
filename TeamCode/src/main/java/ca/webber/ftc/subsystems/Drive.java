@@ -46,6 +46,9 @@ public final class Drive {
         drive(0, 0, 1, speed);
     }
 
+    public void turn(double speed, double degrees) {
+    }
+
     public void stop() {
         drive(0, 0, 0, 0);
     }
