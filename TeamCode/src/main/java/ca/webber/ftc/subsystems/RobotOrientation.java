@@ -11,6 +11,7 @@ public class RobotOrientation {
 
     private BNO055IMU imu;
     private Orientation orientation;
+    private double orientationOffset = 0;
 
     public RobotOrientation(BNO055IMU imu) {
         this.imu = imu;
@@ -18,6 +19,10 @@ public class RobotOrientation {
 
     public double getRobotOrientation() {
         orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return orientation.firstAngle;
+        return orientation.firstAngle - orientationOffset;
+    }
+
+    public void resetOrientation() {
+        orientationOffset += getRobotOrientation();
     }
 }

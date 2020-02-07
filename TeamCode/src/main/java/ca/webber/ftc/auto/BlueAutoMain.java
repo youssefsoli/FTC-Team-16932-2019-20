@@ -18,6 +18,5 @@ public class BlueAutoMain extends LinearOpMode {
 
         waitForStart();
         omnibot.gotoBlueFoundation();
-        sleep(2000);
     }
 }

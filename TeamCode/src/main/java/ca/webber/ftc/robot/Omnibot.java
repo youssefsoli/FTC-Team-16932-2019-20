@@ -31,6 +31,7 @@ public class Omnibot {
     private Gamepad gamepad2;
     private CRServo foundation1;
     private CRServo foundation2;
+    private CRServo capStone;
     private CRServo leftArm;
     private CRServo rightArm;
     private BNO055IMU imu;
@@ -58,6 +59,7 @@ public class Omnibot {
 
         foundation1 = hardwareMap.get(CRServo.class, "foundation1");
         foundation2 = hardwareMap.get(CRServo.class, "foundation2");
+        capStone = hardwareMap.get(CRServo.class, "capStone");
         leftArm = hardwareMap.get(CRServo.class, "leftArm");
         rightArm = hardwareMap.get(CRServo.class, "rightArm");
 
@@ -80,7 +82,7 @@ public class Omnibot {
         lift = new Lift(liftMotorL, liftMotorR);
         intake = new Intake(leftIntake, rightIntake, leftArm, rightArm);
         drive = new Drive(frontRight, frontLeft, backRight, backLeft);
-        foundationMover = new FoundationMover(foundation1, foundation2);
+        foundationMover = new FoundationMover(foundation1, foundation2, capStone);
         robotOrientation = new RobotOrientation(imu);
 
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -132,7 +134,7 @@ public class Omnibot {
         intake.move(gamepad2);
 
         if (!beforeLock && gamepad1.x) {
-            foundationMover.toggleLock();
+            foundationMover.toggleFoundationLock();
         }
         beforeLock = gamepad1.x;
 
@@ -140,6 +142,9 @@ public class Omnibot {
             intake.toggleArms();
         }
         beforeArm = gamepad2.a;
+
+        if (gamepad1.b)
+            robotOrientation.resetOrientation();
 
         if (gamepad2.dpad_up || gamepad2.dpad_down)
             lift.move(gamepad2.dpad_up ? -1 : gamepad2.dpad_down ? 1 : 0);
@@ -150,21 +155,20 @@ public class Omnibot {
     }
 
     public void gotoRedFoundation() {
-
         drive.drive(-1, 0, 0, .5);
         sleep(.8);
 
         drive.forward(0.45);
         sleep(2);
 
-        foundationMover.toggleLock();
+        foundationMover.toggleFoundationLock();
         sleep(0.8);
 
         drive.turn(-0.3);
         sleep(2.2);
 
         drive.forward(0.5);
-        foundationMover.toggleLock();
+        foundationMover.toggleFoundationLock();
         sleep(2);
 
         drive.drive(-1, 0, 0, .5);
@@ -178,7 +182,7 @@ public class Omnibot {
         sleep(0.6);
 
         drive.forward(-0.4);
-        sleep(0.3);
+        sleep(2.3);
 
     }
 
@@ -191,14 +195,14 @@ public class Omnibot {
         drive.forward(0.45);
         sleep(2);
 
-        foundationMover.toggleLock();
+        foundationMover.toggleFoundationLock();
         sleep(0.8);
 
         drive.turn(0.3);
         sleep(2.2);
 
         drive.forward(0.5);
-        foundationMover.toggleLock();
+        foundationMover.toggleFoundationLock();
         sleep(2);
 
         drive.drive(1, 0, 0, .5);
@@ -212,7 +216,30 @@ public class Omnibot {
         sleep(0.6);
 
         drive.forward(-0.4);
-        sleep(0.3);
+        sleep(2.3);
+    }
+
+    public void gotoBlueFoundationAndGrab() {
+        gotoBlueFoundation();
+        intake.open(0.5);
+        sleep(1.5);
+
+        drive.drive(1, 0, 0.1, .5);
+        sleep(0.5);
+        intake.stop();
+
+        drive.forward(-0.3);
+        intake.open(-.5);
+        sleep(2);
+
+        drive.drive(-1, 0, -0.1, .5);
+        sleep(0.5);
+
+        drive.forward(0.4);
+        sleep(1.5);
+
+        drive.turn(0.5);
+        sleep(2);
     }
 
     public void idleBlue() {

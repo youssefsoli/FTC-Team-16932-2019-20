@@ -58,4 +58,13 @@ public class Intake {
         }
     }
 
+    public void open(double speed) {
+        leftArm.setPower(-speed);
+        rightArm.setPower(speed);
+    }
+
+    public void stop() {
+        leftArm.setPower(0);
+        rightArm.setPower(0);
+    }
 }

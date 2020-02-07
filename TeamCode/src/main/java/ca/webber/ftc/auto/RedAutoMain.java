@@ -18,6 +18,5 @@ public class RedAutoMain extends LinearOpMode {
 
         waitForStart();
         omnibot.gotoRedFoundation();
-        sleep(2000);
     }
 }
