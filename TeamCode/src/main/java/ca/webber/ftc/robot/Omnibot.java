@@ -158,8 +158,10 @@ public class Omnibot {
         drive.drive(-1, 0, 0, .5);
         sleep(.8);
 
+        drive.turn(0.2);
+        sleep(0.04);
         drive.forward(0.45);
-        sleep(2);
+        sleep(1.75);
 
         foundationMover.toggleFoundationLock();
         sleep(0.8);
@@ -167,12 +169,9 @@ public class Omnibot {
         drive.turn(-0.3);
         sleep(2.3);
 
-        drive.drive(1, 0, 0, 0.5);
-        sleep(1);
-
         drive.forward(0.5);
         foundationMover.toggleFoundationLock();
-        sleep(2);
+        sleep(2.3);
 
         drive.drive(-1, 0, 0, .5);
         sleep(1.2);
@@ -182,10 +181,10 @@ public class Omnibot {
 
         drive.turn(-0.3);
         intake.toggleArms();
-        sleep(0.6);
+        sleep(0.45);
 
         drive.forward(-0.4);
-        sleep(2.3);
+        sleep(1.8);
 
     }
 
