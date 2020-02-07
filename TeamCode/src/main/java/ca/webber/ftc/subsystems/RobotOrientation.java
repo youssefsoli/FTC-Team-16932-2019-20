@@ -1,31 +1,28 @@
 package ca.webber.ftc.subsystems;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class RobotOrientation
-{
-    BNO055IMU imu;
-    Orientation angles;
+public class RobotOrientation {
 
-     public RobotOrientation(BNO055IMU imu) {
+    private BNO055IMU imu;
+    private Orientation orientation;
+    private double orientationOffset = 0;
+
+    public RobotOrientation(BNO055IMU imu) {
         this.imu = imu;
     }
 
-
     public double getRobotOrientation() {
-            this.angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            return angles.firstAngle;
+        orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return orientation.firstAngle - orientationOffset;
     }
 
-    /*String formatAngle(AngleUnit angleUnit, double angle) {
-        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    public void resetOrientation() {
+        orientationOffset += getRobotOrientation();
     }
-
-    String formatDegrees(double degrees){
-        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-    }*/
 }
