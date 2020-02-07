@@ -31,20 +31,16 @@ public class Omnibot {
     private Gamepad gamepad2;
     private CRServo foundation1;
     private CRServo foundation2;
-    private CRServo capStone;
-    private CRServo leftArm;
-    private CRServo rightArm;
     private BNO055IMU imu;
     private Intake intake;
     private Lift lift;
     private Drive drive;
     private FoundationMover foundationMover;
-    private RobotOrientation robotOrientation;
     private Telemetry telemetry;
     private boolean beforeFast = false;
     private boolean beforeLock = false;
-    private boolean beforeArm = false;
     private ElapsedTime runtime = new ElapsedTime();
+    private RobotOrientation robotOrientation;
 
     public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
         frontRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontRight");
@@ -59,30 +55,36 @@ public class Omnibot {
 
         foundation1 = hardwareMap.get(CRServo.class, "foundation1");
         foundation2 = hardwareMap.get(CRServo.class, "foundation2");
-        capStone = hardwareMap.get(CRServo.class, "capStone");
-        leftArm = hardwareMap.get(CRServo.class, "leftArm");
-        rightArm = hardwareMap.get(CRServo.class, "rightArm");
+
+        // Set up te parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
-        runtime.reset();
 
         lift = new Lift(liftMotorL, liftMotorR);
-        intake = new Intake(leftIntake, rightIntake, leftArm, rightArm);
+        intake = new Intake(leftIntake, rightIntake);
         drive = new Drive(frontRight, frontLeft, backRight, backLeft);
-        foundationMover = new FoundationMover(foundation1, foundation2, capStone);
+        foundationMover = new FoundationMover(foundation1, foundation2);
         robotOrientation = new RobotOrientation(imu);
 
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -127,6 +129,7 @@ public class Omnibot {
         if (!beforeFast && gamepad1.a) {
             drive.toggleFastMode();
         }
+
         beforeFast = gamepad1.a;
 
         drive.driveController(gamepad1, robotOrientation.getRobotOrientation());
@@ -134,24 +137,17 @@ public class Omnibot {
         intake.move(gamepad2);
 
         if (!beforeLock && gamepad1.x) {
-            foundationMover.toggleFoundationLock();
+            foundationMover.toggleLock();
         }
+
         beforeLock = gamepad1.x;
-
-        if (!beforeArm && gamepad2.a) {
-            intake.toggleArms();
-        }
-        beforeArm = gamepad2.a;
-
-        if (gamepad1.b)
-            robotOrientation.resetOrientation();
 
         if (gamepad2.dpad_up || gamepad2.dpad_down)
             lift.move(gamepad2.dpad_up ? -1 : gamepad2.dpad_down ? 1 : 0);
         else
             lift.move(gamepad2.right_trigger - gamepad2.left_trigger);
 
-        telemetry.addData("Orientation", robotOrientation.getRobotOrientation());
+        telemetry.addData("Robot Orientation", robotOrientation.getRobotOrientation());
     }
 
     public void gotoRedFoundation() {
@@ -161,31 +157,18 @@ public class Omnibot {
         drive.forward(0.45);
         sleep(2);
 
-        foundationMover.toggleFoundationLock();
+        foundationMover.toggleLock();
         sleep(0.8);
 
         drive.turn(-0.3);
-        sleep(2.3);
-
-        drive.drive(1, 0, 0, 0.5);
-        sleep(1);
+        sleep(2.2);
 
         drive.forward(0.5);
-        foundationMover.toggleFoundationLock();
+        foundationMover.toggleLock();
         sleep(2);
 
         drive.drive(-1, 0, 0, .5);
-        sleep(1.2);
-
-        drive.forward(-0.4);
-        sleep(0.4);
-
-        drive.turn(-0.3);
-        intake.toggleArms();
-        sleep(0.6);
-
-        drive.forward(-0.4);
-        sleep(2.3);
+        sleep(0.8);
 
     }
 
@@ -198,52 +181,18 @@ public class Omnibot {
         drive.forward(0.45);
         sleep(2);
 
-        foundationMover.toggleFoundationLock();
+        foundationMover.toggleLock();
         sleep(0.8);
 
         drive.turn(0.3);
         sleep(2.2);
 
         drive.forward(0.5);
-        foundationMover.toggleFoundationLock();
+        foundationMover.toggleLock();
         sleep(2);
 
         drive.drive(1, 0, 0, .5);
-        sleep(1.2);
-
-        drive.forward(-0.4);
-        sleep(0.4);
-
-        drive.turn(0.3);
-        intake.toggleArms();
-        sleep(0.6);
-
-        drive.forward(-0.4);
-        sleep(2.3);
-    }
-
-    public void gotoBlueFoundationAndGrab() {
-        gotoBlueFoundation();
-        intake.open(0.5);
-        sleep(1.5);
-
-        drive.drive(-1, 0, 0, 1);
-        sleep(0.5);
-        intake.stop();
-
-        drive.forward(-0.5);
-        sleep(1);
-        intake.open(-.5);
-        sleep(1);
-
-        drive.drive(-1, 0, 0, 1);
-        sleep(1);
-
-        drive.forward(0.5);
-        sleep(1.5);
-
-        drive.turn(0.5);
-        sleep(1.2);
+        sleep(0.8);
     }
 
     public void idleBlue() {
