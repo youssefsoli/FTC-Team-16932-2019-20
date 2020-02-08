@@ -34,7 +34,7 @@ public class FoundationMover {
     public void toggleCapstoneController() {
         capstoneLock = !capstoneLock;
         if (capstoneLock)
-            capstoneController.setPower(1);
+            capstoneController.setPower(-0.5);
         else
             capstoneController.setPower(-1);
     }

@@ -44,6 +44,7 @@ public class Omnibot {
     private boolean beforeFast = false;
     private boolean beforeLock = false;
     private boolean beforeArm = false;
+    private boolean beforeCapstone = false;
     private ElapsedTime runtime = new ElapsedTime();
 
     public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
@@ -143,6 +144,11 @@ public class Omnibot {
         }
         beforeArm = gamepad2.a;
 
+        if (!beforeArm && gamepad1.y) {
+            foundationMover.toggleCapstoneController();
+        }
+        beforeCapstone = gamepad1.y;
+
         if (gamepad1.b)
             robotOrientation.resetOrientation();
 
@@ -159,7 +165,7 @@ public class Omnibot {
         sleep(.8);
 
         drive.turn(0.2);
-        sleep(0.04);
+        sleep(0.08); // 0.04
         drive.forward(0.45);
         sleep(1.75);
 
@@ -167,7 +173,7 @@ public class Omnibot {
         sleep(0.8);
 
         drive.turn(-0.3);
-        sleep(2.3);
+        sleep(5); // 2.3 on rough
 
         drive.forward(0.5);
         foundationMover.toggleFoundationLock();
@@ -201,7 +207,7 @@ public class Omnibot {
         sleep(0.8);
 
         drive.turn(0.3);
-        sleep(2.2);
+        sleep(5); // 2.2 on rough
 
         drive.forward(0.5);
         foundationMover.toggleFoundationLock();
@@ -248,6 +254,15 @@ public class Omnibot {
     public void idleBlue() {
         drive.drive(-1, 0, 0, .5);
         sleep(1.4);
+        drive.forward(.5);
+        sleep(1.8);
+        drive.stop();
+    }
+
+    public void idleRed() {
+        drive.drive(1, 0, 0, .5);
+        intake.toggleArms();
+        sleep(2);
         drive.forward(.5);
         sleep(1.8);
         drive.stop();
