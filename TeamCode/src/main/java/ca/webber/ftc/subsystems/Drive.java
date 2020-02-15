@@ -28,10 +28,26 @@ public final class Drive {
         double driveY = (Math.sin(bearing)) * power;
         double driveX = (Math.cos(bearing)) * power;
 
-        frontRight.setPower(Range.scale(turn + driveY, -1.0, 1.0, -speedFactor, speedFactor));
-        frontLeft.setPower(Range.scale(turn - driveX, -1.0, 1.0, -speedFactor, speedFactor));
-        backRight.setPower(Range.scale(turn + driveX, -1.0, 1.0, -speedFactor, speedFactor));
-        backLeft.setPower(Range.scale(turn - driveY, -1.0, 1.0, -speedFactor, speedFactor));
+        double frontRightPower = turn + driveY;
+        double frontLeftPower = turn - driveX;
+        double backRightPower = turn + driveX;
+        double backLeftPower = turn - driveY;
+
+        // Normalize values
+        double maxValue = Math.max(Math.abs(backLeftPower),
+                Math.max(Math.abs(backRightPower),
+                        Math.max(Math.abs(frontRightPower),
+                                Math.abs(frontLeftPower))));
+
+        frontRightPower /= maxValue;
+        frontLeftPower /= maxValue;
+        backRightPower /= maxValue;
+        backLeftPower /= maxValue;
+
+        frontRight.setPower(Range.scale(frontRightPower, -1.0, 1.0, -speedFactor, speedFactor));
+        frontLeft.setPower(Range.scale(frontLeftPower, -1.0, 1.0, -speedFactor, speedFactor));
+        backRight.setPower(Range.scale(backRightPower, -1.0, 1.0, -speedFactor, speedFactor));
+        backLeft.setPower(Range.scale(backLeftPower, -1.0, 1.0, -speedFactor, speedFactor));
     }
 
     public void drive(double x, double y, double turn, double speedFactor) {
