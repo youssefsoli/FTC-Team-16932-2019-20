@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.Arrays;
+import java.util.List;
+
 import ca.webber.ftc.subsystems.Drive;
 import ca.webber.ftc.subsystems.FoundationMover;
 import ca.webber.ftc.subsystems.Intake;
@@ -19,21 +22,10 @@ import ca.webber.ftc.subsystems.RobotOrientation;
 
 public class Omnibot {
 
-    private DcMotorEx frontRight;
-    private DcMotorEx frontLeft;
-    private DcMotorEx backRight;
-    private DcMotorEx backLeft;
-    private DcMotorEx liftMotorL;
-    private DcMotorEx liftMotorR;
-    private DcMotorEx leftIntake;
-    private DcMotorEx rightIntake;
-    private Gamepad gamepad1;
-    private Gamepad gamepad2;
-    private CRServo foundation1;
-    private CRServo foundation2;
-    private CRServo capStone;
-    private CRServo leftArm;
-    private CRServo rightArm;
+    private DcMotorEx frontRight, frontLeft, backRight, backLeft, liftMotorL, liftMotorR, leftIntake, rightIntake;
+    private List<DcMotorEx> motors;
+    private Gamepad gamepad1, gamepad2;
+    private CRServo foundation1, foundation2, capStone, leftArm, rightArm;
     private BNO055IMU imu;
     private Intake intake;
     private Lift lift;
@@ -64,6 +56,9 @@ public class Omnibot {
         leftArm = hardwareMap.get(CRServo.class, "leftArm");
         rightArm = hardwareMap.get(CRServo.class, "rightArm");
 
+        motors = Arrays.asList(frontRight, frontLeft, backRight, backLeft,
+                liftMotorL, liftMotorR, leftIntake, rightIntake);
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -86,38 +81,10 @@ public class Omnibot {
         foundationMover = new FoundationMover(foundation1, foundation2, capStone);
         robotOrientation = new RobotOrientation(imu);
 
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        liftMotorL.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-        liftMotorR.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-
-        leftIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-        rightIntake.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
-
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        liftMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightIntake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        leftIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightIntake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        liftMotorL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftMotorR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        for (DcMotorEx motor : motors) {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
     }
 
     public Omnibot(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -144,7 +111,7 @@ public class Omnibot {
         }
         beforeArm = gamepad2.a;
 
-        if (!beforeArm && gamepad1.y) {
+        if (!beforeCapstone && gamepad1.y) {
             foundationMover.toggleCapstoneController();
         }
         beforeCapstone = gamepad1.y;

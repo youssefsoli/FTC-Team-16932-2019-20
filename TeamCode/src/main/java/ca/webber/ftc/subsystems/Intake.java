@@ -1,6 +1,7 @@
 package ca.webber.ftc.subsystems;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -16,6 +17,8 @@ public class Intake {
     public Intake(DcMotorEx leftArm, DcMotorEx rightArm, CRServo leftArmHinge, CRServo rightArmHinge) {
         this.leftArm = leftArm;
         this.rightArm = rightArm;
+        leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         this.leftArmHinge = leftArmHinge;
         this.rightArmHinge = rightArmHinge;
