@@ -1,7 +1,6 @@
 package ca.webber.ftc.robot;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -21,12 +20,7 @@ import ca.webber.ftc.subsystems.Lift;
 import ca.webber.ftc.subsystems.RobotOrientation;
 
 public class Omnibot {
-
-    private DcMotorEx frontRight, frontLeft, backRight, backLeft, liftMotorL, liftMotorR, leftIntake, rightIntake;
-    private List<DcMotorEx> motors;
     private Gamepad gamepad1, gamepad2;
-    private CRServo foundation1, foundation2, capStone, leftArm, rightArm;
-    private BNO055IMU imu;
     private Intake intake;
     private Lift lift;
     private Drive drive;
@@ -40,6 +34,11 @@ public class Omnibot {
     private ElapsedTime runtime = new ElapsedTime();
 
     public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
+        List<DcMotorEx> motors;
+        DcMotorEx frontRight, frontLeft, backRight, backLeft, liftMotorL, liftMotorR, leftIntake, rightIntake;
+        CRServo foundation1, foundation2, capStone, leftArm, rightArm;
+        BNO055IMU imu;
+
         frontRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontRight");
         frontLeft = (DcMotorEx) hardwareMap.get(DcMotor.class, "frontLeft");
         backRight = (DcMotorEx) hardwareMap.get(DcMotor.class, "backRight");
@@ -58,17 +57,7 @@ public class Omnibot {
 
         motors = Arrays.asList(frontRight, frontLeft, backRight, backLeft,
                 liftMotorL, liftMotorR, leftIntake, rightIntake);
-
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
 
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -87,6 +76,7 @@ public class Omnibot {
         }
     }
 
+    // Omnibot initialization for autonomous runtimes
     public Omnibot(HardwareMap hardwareMap, Telemetry telemetry) {
         this(hardwareMap, telemetry, null, null);
     }
