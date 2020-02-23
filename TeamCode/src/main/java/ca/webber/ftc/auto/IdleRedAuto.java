@@ -14,9 +14,11 @@ public class IdleRedAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        omnibot = new Omnibot(hardwareMap, telemetry);
+        omnibot = new Omnibot(hardwareMap, telemetry, this);
 
         waitForStart();
-        omnibot.idleRed();
+
+        if (opModeIsActive())
+            omnibot.idleRed();
     }
 }

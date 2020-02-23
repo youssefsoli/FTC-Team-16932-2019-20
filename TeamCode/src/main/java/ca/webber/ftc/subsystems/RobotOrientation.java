@@ -10,6 +10,8 @@ public class RobotOrientation {
 
     private BNO055IMU imu;
     private double orientationOffset = 0;
+    private double previousAngle = 0;
+    private double globalAngle = 0;
 
     public RobotOrientation(BNO055IMU imu) {
         this.imu = imu;
@@ -21,6 +23,22 @@ public class RobotOrientation {
 
     public double getRobotOrientation() {
         return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle - orientationOffset;
+    }
+
+    public double getAbsoluteOrientation() {
+        double currentAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        double netAngle = currentAngle - previousAngle;
+
+        if (netAngle < -180)
+            netAngle += 360;
+        else if (netAngle > 180)
+            netAngle -= 360;
+
+        globalAngle += netAngle;
+
+        previousAngle = currentAngle;
+
+        return globalAngle;
     }
 
     public void resetOrientation() {

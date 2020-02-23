@@ -1,6 +1,7 @@
 package ca.webber.ftc.robot;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,6 +21,7 @@ import ca.webber.ftc.subsystems.Lift;
 import ca.webber.ftc.subsystems.RobotOrientation;
 
 public class Omnibot {
+    private List<DcMotorEx> motors;
     private Gamepad gamepad1, gamepad2;
     private Intake intake;
     private Lift lift;
@@ -31,10 +33,10 @@ public class Omnibot {
     private boolean beforeLock = false;
     private boolean beforeArm = false;
     private boolean beforeCapstone = false;
+    private LinearOpMode autoRuntime;
     private ElapsedTime runtime = new ElapsedTime();
 
-    public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2) {
-        List<DcMotorEx> motors;
+    public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1, Gamepad gamepad2, boolean startArmsUp) {
         DcMotorEx frontRight, frontLeft, backRight, backLeft, liftMotorL, liftMotorR, leftIntake, rightIntake;
         CRServo foundation1, foundation2, capStone, leftArm, rightArm;
         BNO055IMU imu;
@@ -64,24 +66,31 @@ public class Omnibot {
         this.telemetry = telemetry;
         runtime.reset();
 
-        lift = new Lift(liftMotorL, liftMotorR);
-        intake = new Intake(leftIntake, rightIntake, leftArm, rightArm);
-        drive = new Drive(frontRight, frontLeft, backRight, backLeft);
-        foundationMover = new FoundationMover(foundation1, foundation2, capStone);
-        robotOrientation = new RobotOrientation(imu);
-
         for (DcMotorEx motor : motors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
+
+        lift = new Lift(liftMotorL, liftMotorR);
+        intake = new Intake(leftIntake, rightIntake, leftArm, rightArm, startArmsUp);
+        drive = new Drive(frontRight, frontLeft, backRight, backLeft);
+        foundationMover = new FoundationMover(foundation1, foundation2, capStone);
+        robotOrientation = new RobotOrientation(imu);
     }
 
     // Omnibot initialization for autonomous runtimes
-    public Omnibot(HardwareMap hardwareMap, Telemetry telemetry) {
-        this(hardwareMap, telemetry, null, null);
+    public Omnibot(HardwareMap hardwareMap, Telemetry telemetry, LinearOpMode autoRuntime) {
+        this(hardwareMap, telemetry, null, null, true);
+        this.autoRuntime = autoRuntime;
     }
 
     public void teleOpLoop() {
+        telemetry.addData("Gyro", robotOrientation.getAbsoluteOrientation());
+
+        for (DcMotorEx motor : motors) {
+            telemetry.addData(motor.getDeviceName(), motor.getCurrentPosition());
+        }
+
         if (!beforeFast && gamepad1.a) {
             drive.toggleFastMode();
         }
@@ -113,28 +122,24 @@ public class Omnibot {
             lift.move(gamepad2.dpad_up ? -1 : gamepad2.dpad_down ? 1 : 0);
         else
             lift.move(gamepad2.right_trigger - gamepad2.left_trigger);
-
-        telemetry.addData("Orientation", robotOrientation.getRobotOrientation());
     }
 
     public void gotoRedFoundation() {
         drive.drive(-1, 0, 0, .5);
         sleep(.8);
 
-        drive.turn(0.2);
-        sleep(0.08); // 0.04
-        drive.forward(0.45);
-        sleep(1.75);
+        drive.forward(0.3);
+        sleep(2.2);
+        drive.stop();
 
         foundationMover.toggleFoundationLock();
         sleep(0.8);
 
-        drive.turn(-0.3);
-        sleep(5); // 2.3 on rough
+        turnRelative(-0.3, 170, 7);
 
         drive.forward(0.5);
         foundationMover.toggleFoundationLock();
-        sleep(2.3);
+        sleep(2);
 
         drive.drive(-1, 0, 0, .5);
         sleep(1.2);
@@ -142,29 +147,30 @@ public class Omnibot {
         drive.forward(-0.4);
         sleep(0.4);
 
-        drive.turn(-0.3);
         intake.toggleArms();
-        sleep(0.45);
+        turnRelative(-0.3, 75);
 
         drive.forward(-0.4);
-        sleep(1.8);
-
+        sleep(0.7);
     }
 
     public void gotoBlueFoundation() {
-        drive.drive(1, 0, 0, .5);
-        sleep(.8);
+        drive.drive(1, 0, 0, .35);
+        sleep(1.3);
 
+        drive.forward(0.3);
+        sleep(2.3);
         drive.turn(-0.2);
-        sleep(0.08);
-        drive.forward(0.45);
-        sleep(2);
+        sleep(0.2);
+        drive.stop();
+        drive.forward(0.25);
+        sleep(1);
+        drive.stop();
 
         foundationMover.toggleFoundationLock();
         sleep(0.8);
 
-        drive.turn(0.3);
-        sleep(5); // 2.2 on rough
+        turnRelative(0.3, 175, 7);
 
         drive.forward(0.5);
         foundationMover.toggleFoundationLock();
@@ -176,12 +182,11 @@ public class Omnibot {
         drive.forward(-0.4);
         sleep(0.4);
 
-        drive.turn(0.3);
         intake.toggleArms();
-        sleep(0.6);
+        turnRelative(0.3, 80);
 
         drive.forward(-0.4);
-        sleep(2.3);
+        sleep(1);
     }
 
     public void gotoBlueFoundationAndGrab() {
@@ -227,7 +232,41 @@ public class Omnibot {
 
     private void sleep(double seconds) {
         runtime.reset();
-        while (runtime.seconds() < seconds) {
+        while (runtime.seconds() < seconds && autoRuntime.opModeIsActive()) {
+        }
+    }
+
+    private void turnRelative(double speed, double degrees) {
+        drive.turn(speed);
+        double startGyro = robotOrientation.getAbsoluteOrientation();
+        if (speed < 0) {
+            while (robotOrientation.getAbsoluteOrientation() < startGyro + degrees && autoRuntime.opModeIsActive()) {
+            }
+        } else if (speed > 0) {
+            while (robotOrientation.getAbsoluteOrientation() > startGyro - degrees && autoRuntime.opModeIsActive()) {
+            }
+        }
+        drive.stop();
+    }
+
+    private void turnRelative(double speed, double degrees, double timeout) {
+        runtime.reset();
+        drive.turn(speed);
+        double startGyro = robotOrientation.getAbsoluteOrientation();
+        if (speed < 0) {
+            while (robotOrientation.getAbsoluteOrientation() < startGyro + degrees && autoRuntime.opModeIsActive() && runtime.seconds() < timeout) {
+            }
+        } else if (speed > 0) {
+            while (robotOrientation.getAbsoluteOrientation() > startGyro - degrees && autoRuntime.opModeIsActive() && runtime.seconds() < timeout) {
+            }
+        }
+        drive.stop();
+    }
+
+    private void straight(double speed, double distance) {
+        drive.forward(speed);
+        double startTicks = drive.averageTicks();
+        while (drive.averageTicks() < startTicks + distance && autoRuntime.opModeIsActive()) {
         }
     }
 }

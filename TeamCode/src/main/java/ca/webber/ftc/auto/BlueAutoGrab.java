@@ -14,9 +14,11 @@ public class BlueAutoGrab extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        omnibot = new Omnibot(hardwareMap, telemetry);
+        omnibot = new Omnibot(hardwareMap, telemetry, this);
 
         waitForStart();
-        omnibot.gotoBlueFoundationAndGrab();
+
+        if (opModeIsActive())
+            omnibot.gotoBlueFoundationAndGrab();
     }
 }

@@ -14,9 +14,11 @@ public class RedAutoMain extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        omnibot = new Omnibot(hardwareMap, telemetry);
+        omnibot = new Omnibot(hardwareMap, telemetry, this);
 
         waitForStart();
-        omnibot.gotoRedFoundation();
+
+        if (opModeIsActive())
+            omnibot.gotoRedFoundation();
     }
 }

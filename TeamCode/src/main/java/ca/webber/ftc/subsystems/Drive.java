@@ -17,6 +17,7 @@ public final class Drive {
         this.frontLeft = frontLeft;
         this.backRight = backRight;
         this.backLeft = backLeft;
+
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -68,6 +69,11 @@ public final class Drive {
     }
 
     public void turn(double speed, double degrees) {
+    }
+
+    public double averageTicks() {
+        return Math.abs(Math.abs(frontRight.getCurrentPosition()) + Math.abs(frontLeft.getCurrentPosition()) +
+                Math.abs(backRight.getCurrentPosition()) + Math.abs(backLeft.getCurrentPosition())) / 4.0;
     }
 
     public void stop() {

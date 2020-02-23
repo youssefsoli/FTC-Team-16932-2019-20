@@ -14,9 +14,11 @@ public class BlueAutoMain extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        omnibot = new Omnibot(hardwareMap, telemetry);
+        omnibot = new Omnibot(hardwareMap, telemetry, this);
 
         waitForStart();
-        omnibot.gotoBlueFoundation();
+
+        if (opModeIsActive())
+            omnibot.gotoBlueFoundation();
     }
 }

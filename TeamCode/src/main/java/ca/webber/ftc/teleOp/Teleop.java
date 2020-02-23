@@ -32,7 +32,7 @@ public class Teleop extends OpMode {
      */
     @Override
     public void init() {
-        omnibot = new Omnibot(hardwareMap, telemetry, gamepad1, gamepad2);
+        omnibot = new Omnibot(hardwareMap, telemetry, gamepad1, gamepad2, false);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -40,8 +40,6 @@ public class Teleop extends OpMode {
     // Code to run REPEATEDLY after the driver hits PLAY but beforeFast they hit STOP
     @Override
     public void loop() {
-        telemetry.addData("Timer", runtime.seconds());
-        telemetry.addData("Time left", 120 - runtime.seconds());
         omnibot.teleOpLoop();
     }
 

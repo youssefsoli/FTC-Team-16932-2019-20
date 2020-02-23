@@ -14,16 +14,22 @@ public class Intake {
     private CRServo rightArmHinge;
     private boolean lock = false;
 
-    public Intake(DcMotorEx leftArm, DcMotorEx rightArm, CRServo leftArmHinge, CRServo rightArmHinge) {
+    public Intake(DcMotorEx leftArm, DcMotorEx rightArm, CRServo leftArmHinge, CRServo rightArmHinge, boolean startUp) {
         this.leftArm = leftArm;
         this.rightArm = rightArm;
-        leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         this.leftArmHinge = leftArmHinge;
         this.rightArmHinge = rightArmHinge;
-        leftArmHinge.setPower(1);
-        rightArmHinge.setPower(-1);
+
+        if (startUp) {
+            leftArmHinge.setPower(0.8);
+            rightArmHinge.setPower(-0.8);
+        } else {
+            leftArmHinge.setPower(-1);
+            rightArmHinge.setPower(1);
+        }
     }
 
     public void moveLeft(double speed) {
@@ -53,11 +59,11 @@ public class Intake {
     public void toggleArms() {
         lock = !lock;
         if (lock) {
-            leftArmHinge.setPower(-.35);
-            rightArmHinge.setPower(.5);
+            leftArmHinge.setPower(-1);
+            rightArmHinge.setPower(1);
         } else {
-            leftArmHinge.setPower(1);
-            rightArmHinge.setPower(-1);
+            leftArmHinge.setPower(0.8);
+            rightArmHinge.setPower(-0.8);
         }
     }
 
