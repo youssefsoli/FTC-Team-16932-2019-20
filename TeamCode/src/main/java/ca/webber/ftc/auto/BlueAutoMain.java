@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import ca.webber.ftc.robot.Omnibot;
 
 
-@Autonomous(name = "Blue Auto", group = "OmniWheel")
+@Autonomous(name = "Blue Auto", group = "Old")
 public class BlueAutoMain extends LinearOpMode {
 
     private Omnibot omnibot;

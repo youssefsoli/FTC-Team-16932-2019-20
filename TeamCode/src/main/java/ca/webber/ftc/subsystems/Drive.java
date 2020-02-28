@@ -81,6 +81,8 @@ public final class Drive {
     }
 
     public void driveController(Gamepad gamepad, double orientation) {
+        /* ADD THROTTLE WITH TRIGGER */
+
         double x = gamepad.left_stick_x;
         double y = gamepad.left_stick_y;
 
