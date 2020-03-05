@@ -1,14 +1,15 @@
 
-package ca.webber.ftc.auto;
+package ca.webber.ftc.auto.timebased;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import ca.webber.ftc.robot.Omnibot;
 
-
-@Autonomous(name = "Blue Auto Block Grab", group = "Old")
-public class BlueAutoGrab extends LinearOpMode {
+@Disabled
+@Autonomous(name = "Idle Red Auto", group = "Old")
+public class IdleRedAuto extends LinearOpMode {
 
     private Omnibot omnibot;
 
@@ -19,6 +20,6 @@ public class BlueAutoGrab extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive())
-            omnibot.gotoBlueFoundationAndGrab();
+            omnibot.idleRed();
     }
 }

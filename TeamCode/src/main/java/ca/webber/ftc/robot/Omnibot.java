@@ -61,7 +61,8 @@ public class Omnibot {
         rightArm = hardwareMap.get(CRServo.class, "rightArm");
 
         motors = Arrays.asList(frontRight, frontLeft, backRight, backLeft,
-                liftMotorL, liftMotorR, leftIntake, rightIntake);
+                liftMotorL, liftMotorR, leftIntake, rightIntake
+        );
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         this.gamepad1 = gamepad1;
@@ -102,6 +103,12 @@ public class Omnibot {
         leftArm = hardwareMap.get(CRServo.class, "leftArm");
         rightArm = hardwareMap.get(CRServo.class, "rightArm");
 
+//        motors = Arrays.asList(liftMotorL, liftMotorR, leftIntake, rightIntake);
+//        for (DcMotorEx motor : motors) {
+//            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        }
+
         lift = new Lift(liftMotorL, liftMotorR);
         intake = new Intake(leftIntake, rightIntake, leftArm, rightArm, true);
         foundationMover = new FoundationMover(foundation1, foundation2, capStone);
@@ -112,7 +119,7 @@ public class Omnibot {
         telemetry.addData("Gyro", robotOrientation.getAbsoluteOrientation());
 
         for (DcMotorEx motor : motors) {
-            telemetry.addData(motor.getDeviceName(), motor.getCurrentPosition());
+            telemetry.addData(motor.getConnectionInfo(), motor.getCurrentPosition());
         }
 
         if (!beforeFast && gamepad1.a) {
@@ -133,6 +140,8 @@ public class Omnibot {
             intake.toggleArms();
         }
         beforeArm = gamepad2.a;
+
+        telemetry.addData("Intake arms", beforeArm);
 
         if (!beforeCapstone && gamepad1.y) {
             foundationMover.toggleCapstoneController();

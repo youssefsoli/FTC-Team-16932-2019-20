@@ -68,9 +68,6 @@ public final class Drive {
         drive(0, 0, 1, speed);
     }
 
-    public void turn(double speed, double degrees) {
-    }
-
     public double averageTicks() {
         return Math.abs(Math.abs(frontRight.getCurrentPosition()) + Math.abs(frontLeft.getCurrentPosition()) +
                 Math.abs(backRight.getCurrentPosition()) + Math.abs(backLeft.getCurrentPosition())) / 4.0;

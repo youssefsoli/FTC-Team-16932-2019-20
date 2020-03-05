@@ -29,7 +29,7 @@ public class FollowerPIDTuner extends LinearOpMode {
 
         while (!isStopRequested()) {
             drive.followTrajectorySync(
-                    drive.trajectoryBuilder(0)
+                    drive.trajectoryBuilder()
                             .forward(DISTANCE)
                             .build()
             );

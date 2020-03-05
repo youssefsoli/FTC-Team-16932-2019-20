@@ -13,19 +13,22 @@ public class Intake {
     private CRServo leftArmHinge;
     private CRServo rightArmHinge;
     private boolean lock = false;
+    private final double leftPower = 0.45;
+    private final double rightPower = -0.65;
 
     public Intake(DcMotorEx leftArm, DcMotorEx rightArm, CRServo leftArmHinge, CRServo rightArmHinge, boolean startUp) {
         this.leftArm = leftArm;
         this.rightArm = rightArm;
         leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightArm.setDirection(DcMotor.Direction.REVERSE);
 
         this.leftArmHinge = leftArmHinge;
         this.rightArmHinge = rightArmHinge;
 
         if (startUp) {
-            leftArmHinge.setPower(0.8);
-            rightArmHinge.setPower(-0.8);
+            leftArmHinge.setPower(leftPower);
+            rightArmHinge.setPower(rightPower);
         } else {
             leftArmHinge.setPower(-1);
             rightArmHinge.setPower(1);
@@ -53,7 +56,7 @@ public class Intake {
         }
 
         moveLeft(leftPower);
-        moveRight(rightPower);
+        moveRight(-rightPower);
     }
 
     public void toggleArms() {
@@ -62,14 +65,45 @@ public class Intake {
             leftArmHinge.setPower(-1);
             rightArmHinge.setPower(1);
         } else {
-            leftArmHinge.setPower(0.8);
-            rightArmHinge.setPower(-0.8);
+            leftArmHinge.setPower(leftPower);
+            rightArmHinge.setPower(rightPower);
         }
+    }
+
+    public void gotoMax() {
+        leftArm.setPower(1);
+        rightArm.setPower(1);
+
+        while (leftArm.getVelocity() > 0.1 && rightArm.getVelocity() > 0.1) {
+        }
+
+        stop();
+
+        leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void open() {
+        leftArm.setTargetPosition(0);
+        rightArm.setTargetPosition(0);
+        leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftArm.setPower(1);
+        rightArm.setPower(1);
+    }
+
+    public void close() {
+        leftArm.setTargetPosition(100);
+        rightArm.setTargetPosition(100);
+        leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftArm.setPower(1);
+        rightArm.setPower(1);
     }
 
     public void open(double speed) {
         leftArm.setPower(-speed);
-        rightArm.setPower(speed);
+        rightArm.setPower(-speed);
     }
 
     public void stop() {

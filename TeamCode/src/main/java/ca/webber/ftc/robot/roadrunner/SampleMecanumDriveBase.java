@@ -77,8 +77,16 @@ public abstract class SampleMecanumDriveBase extends MecanumDrive {
         return new TrajectoryBuilder(getPoseEstimate(), constraints);
     }
 
+    public TrajectoryBuilder trajectoryBuilder(DriveConstraints driveConstraints) {
+        return new TrajectoryBuilder(getPoseEstimate(), driveConstraints);
+    }
+
     public TrajectoryBuilder trajectoryBuilder(double heading) {
         return new TrajectoryBuilder(getPoseEstimate(), heading, constraints);
+    }
+
+    public TrajectoryBuilder trajectoryBuilder(Pose2d pose, double heading) {
+        return new TrajectoryBuilder(pose, heading, constraints);
     }
 
     public void turn(double angle) {

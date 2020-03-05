@@ -1,14 +1,15 @@
 
-package ca.webber.ftc.auto;
+package ca.webber.ftc.auto.timebased;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import ca.webber.ftc.robot.Omnibot;
 
-
-@Autonomous(name = "Idle Blue Auto", group = "Old")
-public class IdleBlueAuto extends LinearOpMode {
+@Disabled
+@Autonomous(name = "Blue Auto", group = "Old")
+public class BlueAutoMain extends LinearOpMode {
 
     private Omnibot omnibot;
 
@@ -19,6 +20,6 @@ public class IdleBlueAuto extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive())
-            omnibot.idleBlue();
+            omnibot.gotoBlueFoundation();
     }
 }
