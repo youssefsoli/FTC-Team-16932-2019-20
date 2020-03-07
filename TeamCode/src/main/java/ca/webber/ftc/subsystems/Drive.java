@@ -3,7 +3,6 @@ package ca.webber.ftc.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.Range;
 
 public final class Drive {
     private DcMotorEx frontRight;
@@ -50,10 +49,10 @@ public final class Drive {
         backRightPower /= maxValue;
         backLeftPower /= maxValue;
 
-        frontRight.setPower(Range.scale(frontRightPower, -1.0, 1.0, -speedFactor, speedFactor));
-        frontLeft.setPower(Range.scale(frontLeftPower, -1.0, 1.0, -speedFactor, speedFactor));
-        backRight.setPower(Range.scale(backRightPower, -1.0, 1.0, -speedFactor, speedFactor));
-        backLeft.setPower(Range.scale(backLeftPower, -1.0, 1.0, -speedFactor, speedFactor));
+        frontRight.setPower(frontRightPower * speedFactor);
+        frontLeft.setPower(frontLeftPower * speedFactor);
+        backRight.setPower(backRightPower * speedFactor);
+        backLeft.setPower(backLeftPower * speedFactor);
     }
 
     public void drive(double x, double y, double turn, double speedFactor) {

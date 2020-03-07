@@ -103,11 +103,11 @@ public class Omnibot {
         leftArm = hardwareMap.get(CRServo.class, "leftArm");
         rightArm = hardwareMap.get(CRServo.class, "rightArm");
 
-//        motors = Arrays.asList(liftMotorL, liftMotorR, leftIntake, rightIntake);
-//        for (DcMotorEx motor : motors) {
-//            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        }
+        motors = Arrays.asList(leftIntake, rightIntake);
+        for (DcMotorEx motor : motors) {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
 
         lift = new Lift(liftMotorL, liftMotorR);
         intake = new Intake(leftIntake, rightIntake, leftArm, rightArm, true);
@@ -152,9 +152,9 @@ public class Omnibot {
             robotOrientation.resetOrientation();
 
         if (gamepad2.dpad_up || gamepad2.dpad_down)
-            lift.move(gamepad2.dpad_up ? -1 : gamepad2.dpad_down ? 1 : 0);
+            lift.move(gamepad2.dpad_up ? 1 : gamepad2.dpad_down ? -1 : 0);
         else
-            lift.move(gamepad2.right_trigger - gamepad2.left_trigger);
+            lift.move(gamepad2.left_trigger - gamepad2.right_trigger);
     }
 
     public Intake getIntake() {

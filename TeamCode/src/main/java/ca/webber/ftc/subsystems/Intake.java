@@ -59,6 +59,10 @@ public class Intake {
         moveRight(-rightPower);
     }
 
+    public String getEncoderValues() {
+        return "" + leftArm.getCurrentPosition() + " " + rightArm.getCurrentPosition();
+    }
+
     public void toggleArms() {
         lock = !lock;
         if (lock) {
@@ -70,35 +74,14 @@ public class Intake {
         }
     }
 
-    public void gotoMax() {
-        leftArm.setPower(1);
-        rightArm.setPower(1);
-
-        while (leftArm.getVelocity() > 0.1 && rightArm.getVelocity() > 0.1) {
-        }
-
-        stop();
-
-        leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-
     public void open() {
-        leftArm.setTargetPosition(0);
-        rightArm.setTargetPosition(0);
-        leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftArm.setPower(1);
         rightArm.setPower(1);
     }
 
     public void close() {
-        leftArm.setTargetPosition(100);
-        rightArm.setTargetPosition(100);
-        leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftArm.setPower(1);
-        rightArm.setPower(1);
+        leftArm.setPower(-1);
+        rightArm.setPower(-1);
     }
 
     public void open(double speed) {

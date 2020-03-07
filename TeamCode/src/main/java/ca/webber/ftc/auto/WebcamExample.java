@@ -58,8 +58,6 @@ public class WebcamExample extends LinearOpMode {
 
         while (opModeIsActive()) {
             telemetry.addData("Skystone", pipeline.getDetectedSkystonePosition());
-            telemetry.addData("Skystone Positions",
-                    pipeline.getSkystonePositions(3)[0] + " " + pipeline.getSkystonePositions(3)[1]);
             telemetry.addData("Frame Count", camera.getFrameCount());
             telemetry.addData("FPS", String.format("%.2f", camera.getFps()));
             telemetry.addData("Total frame time ms", camera.getTotalFrameTimeMs());
