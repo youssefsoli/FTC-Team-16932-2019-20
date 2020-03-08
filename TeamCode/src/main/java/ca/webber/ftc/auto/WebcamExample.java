@@ -25,7 +25,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.vision.NaivePointSampleSkystoneDetectionPipeline;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -35,8 +34,10 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import ca.webber.ftc.robot.vision.NaiveRectangleSamplingSkystoneDetectionPipeline;
 import ca.webber.ftc.robot.vision.ThreeBlockDetect;
 
+//@Disabled
 @TeleOp
 public class WebcamExample extends LinearOpMode {
     private OpenCvCamera camera;
@@ -44,7 +45,7 @@ public class WebcamExample extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        pipeline = new NaivePointSampleSkystoneDetectionPipeline();
+        pipeline = new NaiveRectangleSamplingSkystoneDetectionPipeline();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
         camera.openCameraDevice();

@@ -10,7 +10,7 @@ class NaivePointSampleSkystoneDetectionPipeline : ThreeBlockDetect() {
     var valRight = -1
     var valLeft = -1
 
-    private val threshold = 102.0
+    private val threshold = 90.0
 
     private val rectWidth: Double = 0.1875
     private val rectHeight: Double = 0.1875

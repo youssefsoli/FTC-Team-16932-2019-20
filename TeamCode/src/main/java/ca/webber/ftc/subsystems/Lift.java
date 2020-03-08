@@ -22,7 +22,7 @@ public class Lift {
             speed = 0;
 
         if (speed < 0)
-            speed *= 0.1;
+            speed *= 0.5;
 
         liftMotorL.setPower(speed);
         liftMotorR.setPower(speed);
@@ -42,7 +42,11 @@ public class Lift {
     }
 
     public void toBottom() {
-        liftMotorL.setPower(0);
-        liftMotorR.setPower(0);
+        liftMotorL.setTargetPosition(0);
+        liftMotorR.setTargetPosition(0);
+        liftMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotorL.setPower(-0.75);
+        liftMotorR.setPower(-0.75);
     }
 }

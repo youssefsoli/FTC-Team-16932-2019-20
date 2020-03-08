@@ -23,8 +23,10 @@ public class RedSkystoneAuto extends LinearOpMode {
         // Set initial starting point
         drive.setPoseEstimate(new Pose2d(-32.5, -62.5, Math.toRadians(90)));
 
-        telemetry.addData("Vision ready!", vision.getSkystonePosition());
-        telemetry.update();
+        while (!isStarted()) {
+            telemetry.addData("Vision ready!", vision.getSkystonePosition());
+            telemetry.update();
+        }
 
         waitForStart();
         if (isStopRequested()) return;

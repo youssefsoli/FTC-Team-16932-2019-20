@@ -141,8 +141,6 @@ public class Omnibot {
         }
         beforeArm = gamepad2.a;
 
-        telemetry.addData("Intake arms", beforeArm);
-
         if (!beforeCapstone && gamepad1.y) {
             foundationMover.toggleCapstoneController();
         }

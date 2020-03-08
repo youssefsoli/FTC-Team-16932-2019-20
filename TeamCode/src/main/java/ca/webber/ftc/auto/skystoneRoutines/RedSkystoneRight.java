@@ -32,7 +32,7 @@ public class RedSkystoneRight extends SkystoneRoutine {
         // Go to foundation
         drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(-55)), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(15, -38, Math.toRadians(0)), Math.toRadians(180))
-                .splineToSplineHeading(new Pose2d(45, -37, Math.toRadians(50)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(50, -30, Math.toRadians(50)), Math.toRadians(90))
                 .addDisplacementMarker(35, () -> {
                     lift.toFoundation();
                 })
@@ -50,7 +50,7 @@ public class RedSkystoneRight extends SkystoneRoutine {
                     intake.toggleArms();
                     lift.toBottom();
                 })
-                .splineToSplineHeading(new Pose2d(-30, -40, Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-25, -40, Math.toRadians(180)), Math.toRadians(180))
                 .addDisplacementMarker(40, () -> {
                     intake.open();
                 })
@@ -59,7 +59,7 @@ public class RedSkystoneRight extends SkystoneRoutine {
                 .build());
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .strafeRight(20)
+                .strafeRight(22.5)
                 .build());
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
@@ -72,7 +72,7 @@ public class RedSkystoneRight extends SkystoneRoutine {
         // Go to foundation pt. 2
         drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(-80)), Math.toRadians(180))
                 .splineToSplineHeading(new Pose2d(20, -38, Math.toRadians(0)), Math.toRadians(180))
-                .splineToSplineHeading(new Pose2d(45, -35, Math.toRadians(50)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(45, -30, Math.toRadians(50)), Math.toRadians(90))
                 .addDisplacementMarker(65, () -> {
                     lift.toFoundation();
                 })
@@ -85,21 +85,21 @@ public class RedSkystoneRight extends SkystoneRoutine {
 
         // Move to pull foundation
         drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(0)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(53.5, -30, Math.toRadians(90)), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(51, -22, Math.toRadians(90)), Math.toRadians(-90))
                 .build());
 
         // Grab foundation
         foundationMover.toggleFoundationLock();
 
         // Rotate foundation
-        drive.turnSync(Math.toRadians(180));
+        drive.turnSync(Math.toRadians(185));
 
         // Detach from foundation
         robot.getFoundationMover().toggleFoundationLock();
 
         // Push foundation towards board
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .back(24)
+                .back(34)
                 .build()
         );
 
