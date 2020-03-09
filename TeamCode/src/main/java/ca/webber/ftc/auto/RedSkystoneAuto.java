@@ -38,6 +38,8 @@ public class RedSkystoneAuto extends LinearOpMode {
 
         SkystoneRoutine routine = null;
 
+        robot.getIntake().open();
+
         switch (skystonePosition) {
             case 0:
                 routine = new RedSkystoneLeft(robot, drive, this);

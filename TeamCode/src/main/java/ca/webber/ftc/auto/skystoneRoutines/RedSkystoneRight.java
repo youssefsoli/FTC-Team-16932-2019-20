@@ -32,7 +32,7 @@ public class RedSkystoneRight extends SkystoneRoutine {
         // Go to foundation
         drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(-55)), Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(15, -38, Math.toRadians(0)), Math.toRadians(180))
-                .splineToSplineHeading(new Pose2d(50, -30, Math.toRadians(50)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(45, -30, Math.toRadians(50)), Math.toRadians(90))
                 .addDisplacementMarker(35, () -> {
                     lift.toFoundation();
                 })
@@ -50,7 +50,7 @@ public class RedSkystoneRight extends SkystoneRoutine {
                     intake.toggleArms();
                     lift.toBottom();
                 })
-                .splineToSplineHeading(new Pose2d(-25, -40, Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-27, -40, Math.toRadians(180)), Math.toRadians(180))
                 .addDisplacementMarker(40, () -> {
                     intake.open();
                 })
@@ -72,7 +72,7 @@ public class RedSkystoneRight extends SkystoneRoutine {
         // Go to foundation pt. 2
         drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(-80)), Math.toRadians(180))
                 .splineToSplineHeading(new Pose2d(20, -38, Math.toRadians(0)), Math.toRadians(180))
-                .splineToSplineHeading(new Pose2d(45, -30, Math.toRadians(50)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(35, -25, Math.toRadians(50)), Math.toRadians(90))
                 .addDisplacementMarker(65, () -> {
                     lift.toFoundation();
                 })
@@ -83,10 +83,25 @@ public class RedSkystoneRight extends SkystoneRoutine {
         intake.toggleArms();
         lift.toBottom();
 
-        // Move to pull foundation
-        drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(0)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(51, -22, Math.toRadians(90)), Math.toRadians(-90))
-                .build());
+        // Rotate to foundation
+        drive.turnSync(Math.toRadians(185));
+
+        // Push foundation towards board
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .back(10)
+                .build()
+        );
+
+        // Push foundation towards board
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .strafeLeft(15)
+                .build()
+        );
+
+//        // Move to pull foundation
+//        drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(0)), Math.toRadians(90))
+//                .splineToSplineHeading(new Pose2d(52, -17, Math.toRadians(90)), Math.toRadians(-90))
+//                .build());
 
         // Grab foundation
         foundationMover.toggleFoundationLock();

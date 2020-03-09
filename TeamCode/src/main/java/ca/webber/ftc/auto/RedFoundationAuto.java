@@ -28,7 +28,7 @@ public class RedFoundationAuto extends LinearOpMode {
 
         // Go to foundation
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .lineTo(new Vector2d(52, -30))
+                .lineTo(new Vector2d(52, -25))
                 .build());
 
 //        // Go to test absolute position
@@ -48,7 +48,7 @@ public class RedFoundationAuto extends LinearOpMode {
 
         // Push foundation towards board
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .back(20)
+                .back(30)
                 .build()
         );
 
@@ -77,7 +77,7 @@ public class RedFoundationAuto extends LinearOpMode {
 
         // Park under bridge turn
         drive.followTrajectorySync(drive.trajectoryBuilder(/* new Pose2d(60.00, -50.00, Math.toRadians(180)), Math.toRadians(90) */)
-                .splineToSplineHeading(new Pose2d(0, -35, Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(0, -37, Math.toRadians(180)), Math.toRadians(180))
                 .build());
     }
 }

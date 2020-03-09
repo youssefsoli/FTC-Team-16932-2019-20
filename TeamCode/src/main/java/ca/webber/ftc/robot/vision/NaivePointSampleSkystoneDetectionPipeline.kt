@@ -16,13 +16,13 @@ class NaivePointSampleSkystoneDetectionPipeline : ThreeBlockDetect() {
     private val rectHeight: Double = 0.1875
 
 
-    private val midX = .5
+    private val midX = .5 + offset
     private val midY = .65
 
-    private val leftX = .15
+    private val leftX = .15 + offset
     private val leftY = .65
 
-    private val rightX = .85
+    private val rightX = .85 + offset
     private val rightY = .65
 
     private val yCbCrChan2Mat = Mat()

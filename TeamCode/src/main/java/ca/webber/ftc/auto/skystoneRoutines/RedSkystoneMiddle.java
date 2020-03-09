@@ -50,7 +50,7 @@ public class RedSkystoneMiddle extends SkystoneRoutine {
                     intake.toggleArms();
                     intake.close();
                 })
-                .splineToSplineHeading(new Pose2d(-34, -20, Math.toRadians(120)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-38, -20, Math.toRadians(120)), Math.toRadians(180))
                 .addDisplacementMarker(40, () -> {
                     intake.open();
                 })
@@ -80,7 +80,7 @@ public class RedSkystoneMiddle extends SkystoneRoutine {
 
         // Move to pull foundation
         drive.followTrajectorySync(drive.trajectoryBuilder(new Pose2d(drive.getPoseEstimate().getX(), drive.getPoseEstimate().getY(), Math.toRadians(0)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(52, -17, Math.toRadians(90)), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(49, -17, Math.toRadians(90)), Math.toRadians(-90))
                 .build());
 
         // Grab foundation
@@ -103,7 +103,7 @@ public class RedSkystoneMiddle extends SkystoneRoutine {
 
         // Park under bridge turn
         drive.followTrajectorySync(drive.trajectoryBuilder(/* new Pose2d(60.00, -50.00, Math.toRadians(180)), Math.toRadians(90) */)
-                .splineToSplineHeading(new Pose2d(0, -35, Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-10, -35, Math.toRadians(180)), Math.toRadians(180))
                 .build());
     }
 }

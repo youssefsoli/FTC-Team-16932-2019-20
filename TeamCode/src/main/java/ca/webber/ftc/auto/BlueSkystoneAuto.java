@@ -18,13 +18,16 @@ public class BlueSkystoneAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Omnibot robot = new Omnibot(hardwareMap);
         SampleMecanumDriveBase drive = robot.getDrive();
-        Vision vision = new Vision(hardwareMap);
+        Vision vision = new Vision(hardwareMap, -0.2);
+
 
         // Set initial starting point
         drive.setPoseEstimate(new Pose2d(-32.5, 62.5, Math.toRadians(-90)));
 
-        telemetry.addData("Vision ready!", vision.getSkystonePosition());
-        telemetry.update();
+        while (!isStarted()) {
+            telemetry.addData("Vision ready!", vision.getSkystonePosition());
+            telemetry.update();
+        }
 
         waitForStart();
         if (isStopRequested()) return;
@@ -36,15 +39,17 @@ public class BlueSkystoneAuto extends LinearOpMode {
 
         SkystoneRoutine routine = null;
 
+        robot.getIntake().open();
+
         switch (skystonePosition) {
             case 0:
-                routine = new BlueSkystoneRight(robot, drive, this);
+                routine = new BlueSkystoneLeft(robot, drive, this);
                 break;
             case 1:
                 routine = new BlueSkystoneMiddle(robot, drive, this);
                 break;
             case 2:
-                routine = new BlueSkystoneLeft(robot, drive, this);
+                routine = new BlueSkystoneRight(robot, drive, this);
                 break;
             default:
                 telemetry.addData("Failed", true);

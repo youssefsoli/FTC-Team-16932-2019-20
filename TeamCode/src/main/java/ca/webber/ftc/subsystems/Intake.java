@@ -13,8 +13,8 @@ public class Intake {
     private CRServo leftArmHinge;
     private CRServo rightArmHinge;
     private boolean lock = false;
-    private final double leftPower = 0.45;
-    private final double rightPower = -0.65;
+    private final double leftPower = 0.75;
+    private final double rightPower = -0.75;
 
     public Intake(DcMotorEx leftArm, DcMotorEx rightArm, CRServo leftArmHinge, CRServo rightArmHinge, boolean startUp) {
         this.leftArm = leftArm;

@@ -28,7 +28,7 @@ public class BlueFoundationAuto extends LinearOpMode {
 
         // Go to foundation
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .lineTo(new Vector2d(52, 30))
+                .lineTo(new Vector2d(56, 25))
                 .build());
 
 //        // Go to test absolute position
@@ -41,14 +41,14 @@ public class BlueFoundationAuto extends LinearOpMode {
         sleep(1000);
 
         // Rotate foundation
-        drive.turnSync(Math.toRadians(-180));
+        drive.turnSync(Math.toRadians(-185));
 
         // Detach from foundation
         robot.getFoundationMover().toggleFoundationLock();
 
         // Push foundation towards board
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .back(20)
+                .back(25)
                 .build()
         );
 
@@ -77,7 +77,7 @@ public class BlueFoundationAuto extends LinearOpMode {
 
         // Park under bridge turn
         drive.followTrajectorySync(drive.trajectoryBuilder(/* new Pose2d(60.00, -50.00, Math.toRadians(180)), Math.toRadians(90) */)
-                .splineToSplineHeading(new Pose2d(0, 35, Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(0, 37, Math.toRadians(180)), Math.toRadians(180))
                 .build());
     }
 }

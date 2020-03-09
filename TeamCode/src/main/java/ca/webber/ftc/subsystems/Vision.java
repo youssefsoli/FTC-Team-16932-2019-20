@@ -23,6 +23,16 @@ public class Vision {
         camera.startStreaming(pipeline.getWidth(), pipeline.getHeight(), OpenCvCameraRotation.UPRIGHT);
     }
 
+    public Vision(HardwareMap hardwareMap, double offset) {
+        pipeline = new NaivePointSampleSkystoneDetectionPipeline();
+        pipeline.setOffset(offset);
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+        camera.openCameraDevice();
+        camera.setPipeline(pipeline);
+        camera.startStreaming(pipeline.getWidth(), pipeline.getHeight(), OpenCvCameraRotation.UPRIGHT);
+    }
+
     public int getSkystonePosition() {
         return pipeline.getDetectedSkystonePosition();
     }
